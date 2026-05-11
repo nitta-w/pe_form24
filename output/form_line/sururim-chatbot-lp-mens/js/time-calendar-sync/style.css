@@ -1,0 +1,457 @@
+@charset "utf-8";
+
+.js-tc {
+  font-size: 1.4rem;
+  letter-spacing: 0;
+  position: relative;
+  min-height: 20rem;
+}
+
+/************************************
+ * 月グリッドカレンダー
+ ************************************/
+.cal {
+  background: var(--bk2, #141827);
+  border: 1px solid var(--bdr, rgba(201, 169, 110, .22));
+  border-radius: 0.2rem;
+  padding: 1.6rem;
+  box-shadow: var(--shc, 0 0.4rem 2rem rgba(0, 0, 0, .3));
+  max-width: 96%;
+  scroll-margin-top: 7rem;
+}
+
+.cal__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+}
+
+.cal__month {
+  font-weight: 600;
+  font-size: 1.4rem;
+  color: var(--ivory, #E8E4DC);
+  letter-spacing: .08em;
+  font-family: var(--serif, 'Cormorant Garamond', 'Noto Serif JP', serif);
+}
+
+.cal__nav {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.cal__nav button {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--bk, #0B0E1A);
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--gold-d, #9A8248);
+  cursor: pointer;
+  transition: all .2s;
+  color: var(--gold, #C9A96E);
+}
+
+.cal__nav button:hover {
+  background: var(--bk3, #1C2238);
+  border-color: var(--gold, #C9A96E);
+}
+
+.cal__nav button:disabled {
+  opacity: .3;
+  cursor: default;
+}
+
+.cal__nav svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  color: var(--gold, #C9A96E);
+}
+
+.cal__dow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.3rem;
+  margin-bottom: 0.6rem;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--mt, #8B95A8);
+  letter-spacing: .08em;
+  font-family: var(--serif, 'Cormorant Garamond', 'Noto Serif JP', serif);
+}
+
+.cal__dow span:first-child {
+  color: #D88B98;
+}
+
+.cal__dow span:last-child {
+  color: #9BB3D1;
+}
+
+.cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.3rem;
+}
+
+.cal__day {
+  aspect-ratio: 1;
+  border-radius: 0.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .2s;
+  position: relative;
+  background: var(--bk, #0B0E1A);
+  border: 1px solid var(--bdr2, rgba(232, 228, 220, .08));
+  color: var(--ivory, #E8E4DC);
+  font-family: var(--num, 'Poppins', sans-serif);
+  user-select: none;
+}
+
+/* checkbox 本体は非表示 */
+.cal__day-input {
+  display: none;
+}
+
+@media (hover: hover) {
+  .cal__day:not(.past):not(.full):not(:has(.cal__day-input:checked)):hover {
+    background: var(--bk3, #1C2238);
+    border-color: var(--gold-d, #9A8248);
+  }
+}
+
+.cal__day.empty {
+  visibility: hidden;
+}
+
+.cal__day.past {
+  opacity: .25;
+  cursor: default;
+  pointer-events: none;
+}
+
+
+.cal__day.full {
+  opacity: .35;
+  cursor: default;
+  pointer-events: none;
+}
+
+.cal__day.full::after {
+  content: '満席';
+  position: absolute;
+  bottom: 4px;
+  font-size: 0.6rem;
+  color: #D88B98;
+  font-weight: 600;
+  font-family: 'Noto Serif JP', serif;
+}
+
+.cal__day.closed {
+  opacity: .35;
+  cursor: default;
+  pointer-events: none;
+}
+
+.cal__day.closed::after {
+  content: '休診';
+  position: absolute;
+  bottom: 4px;
+  font-size: 0.6rem;
+  color: var(--mt, #8B95A8);
+  font-weight: 600;
+  font-family: 'Noto Serif JP', serif;
+}
+
+.cal__day.beyond {
+  opacity: .2;
+  cursor: default;
+  pointer-events: none;
+}
+
+.cal__day.sun {
+  color: #D88B98;
+}
+
+.cal__day.sat {
+  color: #9BB3D1;
+}
+
+/* 選択状態 */
+.cal__day:has(.cal__day-input:checked) {
+  background: linear-gradient(135deg, var(--gold-d, #9A8248), var(--gold, #C9A96E));
+  color: var(--bk, #0B0E1A);
+  border-color: var(--gold-l, #E4C889);
+  font-weight: 700;
+}
+
+.cal__day.sun:has(.cal__day-input:checked),
+.cal__day.sat:has(.cal__day-input:checked) {
+  color: var(--bk, #0B0E1A);
+}
+
+.cal__day .pop-tag {
+  display: none;
+}
+
+.cal__day.sat:not(.past):not(.full)::before,
+.cal__day.sun:not(.past):not(.full)::before {
+  display: block;
+  content: "";
+  position: absolute;
+  top: 0.3rem;
+  right: 0.3rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--gold, #C9A96E);
+  border-radius: 50%;
+  box-shadow: 0 0 0.4rem var(--gold, #C9A96E);
+}
+
+.cal__help {
+  font-size: 1rem;
+  color: var(--mt, #8B95A8);
+  margin-top: 1rem;
+  line-height: 1.6;
+  letter-spacing: .04em;
+}
+
+/************************************
+ * 希望行（第1〜第3希望）
+ ************************************/
+.pref {
+  margin-top: 1.4rem;
+}
+
+.pref__row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.pref__label {
+  min-width: 5.6rem;
+  color: var(--gold, #C9A96E);
+  flex-shrink: 0;
+  font-size: 1rem;
+  letter-spacing: .15em;
+  font-family: var(--serif, 'Cormorant Garamond', 'Noto Serif JP', serif);
+  text-transform: uppercase;
+}
+
+.pref__date {
+  flex: 1;
+  padding: 1rem;
+  border: 1px solid var(--bdr, rgba(201, 169, 110, .22));
+  border-radius: 0.2rem;
+  background: var(--bk, #0B0E1A);
+  font-size: 1.2rem;
+  text-align: center;
+  color: var(--mt, #8B95A8);
+  min-height: 3.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: .04em;
+}
+
+.pref__date.filled {
+  border-color: var(--gold, #C9A96E);
+  color: var(--gold-l, #E4C889);
+  background: var(--gold-bg, rgba(201, 169, 110, .08));
+}
+
+.pref__time {
+  width: 8rem;
+  flex-shrink: 0;
+}
+
+.pref__time select {
+  width: 100%;
+  padding: 0.9rem 0.4rem;
+  border: 1px solid var(--bdr, rgba(201, 169, 110, .22));
+  border-radius: 0.2rem;
+  background: var(--bk, #0B0E1A);
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  appearance: none;
+  color: var(--ivory, #E8E4DC);
+  cursor: pointer;
+  outline: none;
+  font-family: var(--num, 'Poppins', sans-serif);
+}
+
+.pref__time select:focus {
+  border-color: var(--gold, #C9A96E);
+}
+
+.pref__time select:disabled {
+  opacity: .5;
+  cursor: default;
+}
+
+.pref__clear {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  background: var(--bk3, #1C2238);
+  border: 1px solid var(--bdr2, rgba(232, 228, 220, .08));
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.pref__clear svg {
+  width: 1rem;
+  height: 1rem;
+  color: var(--mt, #8B95A8);
+}
+
+/************************************
+ * hidden input
+ ************************************/
+.js-tc-hidden-input {
+  display: none;
+}
+
+/************************************
+ * ローダー
+ ************************************/
+.js-tc-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 0;
+  background-color: rgba(11, 14, 26, 0.8);
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.js-tc-loading__inner {
+  width: 35px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 4px solid var(--gold, #C9A96E);
+  animation: spin-1 1s infinite linear alternate, spin-2 2s infinite linear;
+}
+
+.js-tc-loading.is-visible {
+  height: 100%;
+  animation: tcFadeIn .1s forwards ease-out;
+}
+
+/************************************
+ * 代替メッセージ
+ ************************************/
+.js-tc-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 0;
+  background-color: rgba(11, 14, 26, 0.92);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  visibility: hidden;
+  opacity: 0;
+  overflow: hidden;
+  font-size: 1rem;
+  text-align: center;
+  white-space: pre-line;
+  color: var(--ivory, #E8E4DC);
+}
+
+.js-tc-message.is-visible {
+  height: 100%;
+  animation: tcFadeIn .1s forwards ease-out;
+}
+
+.js-tc-message__inner a {
+  color: var(--gold-l, #E4C889);
+}
+
+.js-tc-message__em-text {
+  color: #D88B98;
+}
+
+/************************************
+ * アニメーション
+ ************************************/
+@keyframes tcFadeIn {
+  0% {
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  100% {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+@keyframes spin-1 {
+  0% {
+    clip-path: polygon(50% 50%, 0 0, 50% 0%, 50% 0%, 50% 0%, 50% 0%, 50% 0%)
+  }
+
+  12.5% {
+    clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 0%, 100% 0%, 100% 0%)
+  }
+
+  25% {
+    clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 100%, 100% 100%, 100% 100%)
+  }
+
+  50% {
+    clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%)
+  }
+
+  62.5% {
+    clip-path: polygon(50% 50%, 100% 0, 100% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%)
+  }
+
+  75% {
+    clip-path: polygon(50% 50%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 50% 100%, 0% 100%)
+  }
+
+  100% {
+    clip-path: polygon(50% 50%, 50% 100%, 50% 100%, 50% 100%, 50% 100%, 50% 100%, 0% 100%)
+  }
+}
+
+@keyframes spin-2 {
+  0% {
+    transform: scaleY(1) rotate(0deg)
+  }
+
+  49.99% {
+    transform: scaleY(1) rotate(135deg)
+  }
+
+  50% {
+    transform: scaleY(-1) rotate(0deg)
+  }
+
+  100% {
+    transform: scaleY(-1) rotate(-135deg)
+  }
+}

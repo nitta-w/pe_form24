@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#0B0E1A"/>
+<title>スルリム式 脂肪除去プログラム for MEN｜LINE限定 プレミアムベネフィット</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600;700;900&family=Cormorant+Garamond:wght@400;500;600;700&family=Poppins:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:'Noto Serif JP','Hiragino Mincho ProN',serif;font-weight:500;line-height:1.75;
+  color:#E8E4DC;background:#0B0E1A;overflow-x:hidden;-webkit-font-smoothing:antialiased;
+  letter-spacing:.02em;
+}
+button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+input,select{font-family:inherit;font-size:inherit}
+
+:root{
+  --bk:#0B0E1A;--bk2:#141827;--bk3:#1C2238;--bk4:#252B45;
+  --gold:#C9A96E;--gold-l:#E4C889;--gold-d:#9A8248;--gold-bg:rgba(201,169,110,.08);
+  --ivory:#E8E4DC;--ivory2:#C8C2B3;--mt:#8B95A8;
+  --bdr:rgba(201,169,110,.22);--bdr2:rgba(232,228,220,.08);
+  --sh:0 12px 40px rgba(0,0,0,.5);--shc:0 4px 20px rgba(0,0,0,.3);
+  --serif:'Cormorant Garamond','Noto Serif JP',serif;
+  --num:'Poppins',sans-serif;
+  --line:#06C755;
+}
+
+.app{max-width:480px;margin:0 auto;min-height:100dvh;background:var(--bk);position:relative;
+  background-image:
+    radial-gradient(circle at 20% 10%,rgba(201,169,110,.06),transparent 50%),
+    radial-gradient(circle at 80% 85%,rgba(155,179,209,.04),transparent 50%);
+}
+
+/* ===== PROGRESS ===== */
+.prog{position:sticky;top:0;z-index:50;background:rgba(11,14,26,.92);padding:12px 16px 14px;backdrop-filter:blur(10px);border-bottom:1px solid var(--bdr2)}
+.prog__bars{display:flex;gap:3px}
+.prog__s{flex:1;height:2px;background:var(--bdr2);border-radius:0;overflow:visible;position:relative}
+.prog__s.done{background:linear-gradient(90deg,var(--gold-d),var(--gold))}
+.prog__s.cur::after{content:'';position:absolute;left:0;top:0;width:100%;height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold-l));animation:sf .5s ease forwards;transform-origin:left}
+@keyframes sf{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.prog__m{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:10px;color:var(--mt);font-family:var(--serif);letter-spacing:.14em;text-transform:uppercase}
+.prog__m strong{color:var(--gold);font-weight:600}
+.prog__icon{
+  position:absolute;top:-11px;left:50%;transform:translateX(-50%);z-index:2;
+  width:22px;height:22px;border-radius:50%;
+  background:var(--bk);border:1.5px solid var(--gold);
+  display:grid;place-items:center;
+  box-shadow:0 0 10px rgba(201,169,110,.4);
+}
+
+/* ===== TOPBAR ===== */
+.top{display:flex;align-items:center;gap:12px;padding:14px 18px 12px;border-bottom:1px solid var(--bdr2)}
+.top__av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#2A3044,#1A1F33);display:grid;place-items:center;box-shadow:0 0 0 1.5px var(--gold-d),0 2px 10px rgba(0,0,0,.5);position:relative;overflow:visible}
+.top__av::after{content:'';position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;background:#62E088;border-radius:50%;border:2px solid var(--bk);z-index:2}
+.top__nm{font-weight:600;font-size:14px;line-height:1.3;letter-spacing:.08em;font-family:var(--serif)}
+.top__nm small{display:block;font-size:9px;color:var(--gold);font-weight:500;letter-spacing:.15em;margin-top:2px;font-family:var(--serif);text-transform:uppercase}
+
+/* ===== CHAT ===== */
+.chat{padding:8px 16px 200px}
+.msg{margin-bottom:14px;opacity:0;transform:translateY(10px);animation:mi .5s ease forwards;scroll-margin-top:70px}
+@keyframes mi{to{opacity:1;transform:translateY(0)}}
+.msg--b{display:flex;align-items:flex-start;gap:10px}
+.av-s{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#2A3044,#1A1F33);flex-shrink:0;display:grid;place-items:center;margin-top:2px;box-shadow:0 0 0 1px var(--gold-d)}
+.bbl{background:var(--bk2);padding:14px 18px;border-radius:2px 14px 14px 14px;box-shadow:var(--shc);max-width:84%;font-size:14px;line-height:1.8;border:1px solid var(--bdr2);color:var(--ivory)}
+.bbl b,.bbl strong{color:var(--gold-l);font-weight:600}
+.bbl em{font-style:normal;color:var(--gold-l);font-weight:600;border-bottom:1px solid var(--gold-d);padding-bottom:1px}
+.msg--u{display:flex;justify-content:flex-end}
+.msg--u .bbl{background:linear-gradient(135deg,var(--gold-d),var(--gold));color:#0B0E1A;border-radius:14px 2px 14px 14px;border:none;font-weight:600;box-shadow:0 4px 14px rgba(201,169,110,.25)}
+
+/* typing */
+.typ{display:inline-flex;gap:5px;padding:14px 18px;background:var(--bk2);border-radius:2px 14px 14px 14px;border:1px solid var(--bdr2);box-shadow:var(--shc)}
+.typ span{width:6px;height:6px;background:var(--gold);border-radius:50%;animation:tb 1.1s ease-in-out infinite;opacity:.5}
+.typ span:nth-child(2){animation-delay:.15s}
+.typ span:nth-child(3){animation-delay:.3s}
+@keyframes tb{0%,60%,100%{transform:translateY(0);opacity:.35}30%{transform:translateY(-5px);opacity:1}}
+
+/* ===== CHOICES ===== */
+.opts{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin:10px 0 16px;scroll-margin-top:70px}
+.opt{padding:12px 18px;background:var(--bk2);border:1px solid var(--bdr);color:var(--ivory);border-radius:2px;font-weight:500;font-size:13px;transition:all .25s;min-height:44px;display:inline-flex;align-items:center;gap:6px;letter-spacing:.04em;position:relative;overflow:hidden}
+.opt:hover{background:var(--bk3);border-color:var(--gold)}
+.opt:active{transform:scale(.97)}
+.opt.sel{background:linear-gradient(135deg,var(--gold-d),var(--gold));color:#0B0E1A;border-color:var(--gold-l);font-weight:700}
+.opt--g{flex:1 1 calc(50% - 4px);text-align:center;justify-content:center}
+.opt--m{flex:1 1 calc(50% - 4px);justify-content:center;position:relative;padding-left:36px}
+.opt--m::before{content:'';position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;border:1.5px solid var(--bdr);background:var(--bk);transition:all .25s}
+.opt--m.sel::before{background:#0B0E1A;border-color:#0B0E1A;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M11 4L6 9L3 6' stroke='%23C9A96E' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:11px}
+.opt__icon{width:18px;height:18px;flex-shrink:0}
+.opt__icon svg{width:100%;height:100%}
+
+.nbw{display:flex;justify-content:flex-end;margin:8px 0 16px}
+.nb{padding:13px 28px;background:linear-gradient(135deg,var(--gold-d),var(--gold));color:#0B0E1A;border-radius:2px;font-weight:700;font-size:13px;box-shadow:0 4px 18px rgba(201,169,110,.3),inset 0 1px 0 rgba(255,255,255,.2);display:inline-flex;align-items:center;gap:8px;transition:all .25s;letter-spacing:.06em;position:relative;overflow:hidden}
+.nb::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(255,255,255,.25),transparent);transform:translateX(-100%);transition:transform .6s}
+.nb:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(201,169,110,.45)}
+.nb:hover::before{transform:translateX(100%)}
+.nb:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none}
+.nb svg{width:12px;height:12px}
+
+/* step-next (user-controlled advance) */
+.step-next{display:flex;justify-content:center;margin:18px 0}
+.step-next__btn{
+  padding:13px 32px;background:transparent;border:1px solid var(--bdr);border-radius:2px;
+  font-weight:500;font-size:12px;color:var(--gold);display:flex;align-items:center;gap:8px;
+  transition:all .25s;letter-spacing:.14em;text-transform:uppercase;font-family:var(--serif);
+}
+.step-next__btn:hover{border-color:var(--gold);background:var(--gold-bg)}
+.step-next__btn svg{width:10px;height:10px}
+
+/* ===== CARD ===== */
+.card{background:var(--bk2);border-radius:2px;padding:20px;box-shadow:var(--shc);border:1px solid var(--bdr);max-width:92%;position:relative}
+.card::before{content:'';position:absolute;top:0;left:0;width:40px;height:1px;background:var(--gold)}
+.card::after{content:'';position:absolute;top:0;left:0;height:40px;width:1px;background:var(--gold)}
+.card__t{font-weight:600;font-size:14px;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:10px;font-family:var(--serif);letter-spacing:.14em;text-transform:uppercase}
+.card__t::before{content:'—';color:var(--gold);font-weight:400}
+.card__b{font-size:13px;line-height:1.9;color:var(--ivory)}
+.card__b p+p{margin-top:8px}
+
+/* merit rich card */
+.card--merit{background:linear-gradient(135deg,#141827,#1A1F33);position:relative;overflow:hidden}
+.card--merit::after{content:'';position:absolute;top:0;right:0;width:1px;height:40px;background:var(--gold)}
+.card--merit > *{position:relative;z-index:1}
+.merit-list{list-style:none;padding:0;margin:16px 0 0}
+.merit-list li{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--bdr2);align-items:flex-start}
+.merit-list li:last-child{border-bottom:none}
+.merit-ico{width:36px;height:36px;border:1px solid var(--gold-d);background:var(--gold-bg);display:grid;place-items:center;flex-shrink:0;color:var(--gold);transform:rotate(45deg)}
+.merit-ico svg{transform:rotate(-45deg)}
+.merit-body{flex:1}
+.merit-body strong{display:block;font-family:var(--serif);font-weight:600;font-size:14px;color:var(--ivory);letter-spacing:.04em;margin-bottom:4px}
+.merit-body span{display:block;font-size:11px;color:var(--ivory2);line-height:1.75;letter-spacing:.02em}
+.card__foot{margin-top:16px;padding-top:14px;border-top:1px solid var(--bdr);text-align:center;font-size:11px;color:var(--gold);letter-spacing:.14em;font-family:var(--serif)}
+
+/* edu grid */
+.edu{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.edu__c{padding:16px 10px;border-radius:2px;text-align:center;font-size:11px;font-weight:600;line-height:1.5;letter-spacing:.04em}
+.edu__c--d{background:rgba(139,31,47,.15);color:#D88B98;border:1px solid rgba(139,31,47,.4)}
+.edu__c--s{background:var(--gold-bg);color:var(--gold-l);border:1px solid var(--bdr)}
+.edu__c strong{display:block;font-size:22px;margin-bottom:4px;font-family:var(--num);font-weight:700}
+/* fat cell visual */
+.fat-vis{display:flex;justify-content:center;gap:16px;margin:14px 0 6px}
+.fat-vis__item{text-align:center;font-size:10px;font-weight:600;color:var(--mt)}
+.fat-vis__item svg{margin:0 auto 4px}
+
+/* ===== REASON CARDS ===== */
+.reasons{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 4px 14px 0;margin:12px -4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.reasons::-webkit-scrollbar{display:none}
+.rsn-arrow{
+  display:flex;justify-content:center;margin:8px auto 0;
+  width:36px;height:36px;border-radius:50%;
+  background:var(--bk2);border:1px solid var(--gold-d);
+  align-items:center;color:var(--gold);
+  animation:swipeX 1.2s ease-in-out infinite;
+}
+.rsn{flex:0 0 268px;scroll-snap-align:start;background:var(--bk2);border-radius:2px;overflow:hidden;box-shadow:var(--shc);border:1px solid var(--bdr);position:relative}
+.rsn::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.rsn__img{height:160px;background:linear-gradient(135deg,#1A1F33,#252B45);display:grid;place-items:center;position:relative}
+.rsn__img::after{content:'';position:absolute;inset:14px;border:1px solid var(--bdr);pointer-events:none}
+.rsn__img svg{width:52px;height:52px;color:var(--gold)}
+.rsn__body{padding:16px 14px 18px}
+.rsn__num{font-family:var(--serif);font-weight:500;color:var(--gold);font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+.rsn__title{font-weight:700;font-size:15px;margin:6px 0 8px;line-height:1.45;color:var(--ivory);letter-spacing:.02em}
+.rsn__desc{font-size:11px;color:var(--ivory2);line-height:1.7}
+
+/* ===== BA ===== */
+.ba-card{background:var(--bk2);border-radius:2px;overflow:hidden;box-shadow:var(--shc);border:1px solid var(--bdr);max-width:94%;position:relative}
+.ba-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.ba-hdr{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--bdr2)}
+.ba-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#2A3044,#1A1F33);display:grid;place-items:center;position:relative}
+.ba-av::after{content:'';position:absolute;inset:-2px;border-radius:50%;background:conic-gradient(from 0deg,var(--gold-d),var(--gold-l),var(--gold-d));z-index:-1}
+.ba-mt{flex:1;font-size:12px;color:var(--ivory)}.ba-mt strong{display:block;font-weight:600;letter-spacing:.05em;font-family:var(--serif)}.ba-mt small{color:var(--mt);font-size:10px;letter-spacing:.08em}
+.ba-car{position:relative;background:#0F1220;aspect-ratio:1/1}
+.ba-sls{display:flex;transition:transform .4s ease;width:100%;height:100%}
+.ba-sl{flex:0 0 100%;display:flex}
+.ba-h{flex:1;position:relative;overflow:hidden}
+.ba-h img{width:100%;height:100%;object-fit:cover}
+.ba-lb{position:absolute;top:10px;left:10px;background:rgba(11,14,26,.8);color:var(--ivory);padding:4px 11px;border:1px solid var(--bdr);font-size:9px;font-weight:600;letter-spacing:.2em;font-family:var(--serif)}
+.ba-lb--a{left:auto;right:10px;background:linear-gradient(135deg,var(--gold-d),var(--gold));color:#0B0E1A;border-color:var(--gold)}
+.ba-ar{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;background:rgba(11,14,26,.8);border:1px solid var(--gold-d);display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.4);z-index:2;color:var(--gold)}
+.ba-ar--p{left:10px}.ba-ar--n{right:10px}
+.ba-ar svg{width:12px;height:12px}
+.ba-ds{display:flex;justify-content:center;gap:5px;padding:10px 0;background:var(--bk2)}
+.ba-d{width:6px;height:6px;border-radius:50%;background:var(--bdr);transition:all .2s}
+.ba-d.on{background:var(--gold);width:18px;border-radius:2px}
+.ba-cap{padding:2px 16px 14px;font-size:11px;line-height:1.8;color:var(--ivory2)}
+.ba-cap strong{font-weight:600;color:var(--ivory);font-family:var(--serif)}.ba-tag{color:var(--gold);font-weight:500;letter-spacing:.08em}
+
+/* ===== CONFETTI CANVAS ===== */
+#confetti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:200}
+
+/* ===== COUPON POPUP ===== */
+.cpn-overlay{position:fixed;inset:0;background:rgba(5,7,14,.85);z-index:150;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}
+.cpn-overlay.show{display:flex}
+.cpn-wrap{width:100%;max-width:380px;max-height:90vh;overflow-y:auto;scrollbar-width:none}
+.cpn-wrap::-webkit-scrollbar{display:none}
+.cpn-header{text-align:center;margin-bottom:20px}
+.cpn-header__badge{display:inline-block;background:transparent;color:var(--gold);padding:6px 18px;border:1px solid var(--gold);font-size:10px;font-weight:500;letter-spacing:.24em;margin-bottom:12px;font-family:var(--serif);text-transform:uppercase}
+.cpn-header__title{font-size:22px;font-weight:700;color:var(--ivory);line-height:1.5;font-family:var(--serif);letter-spacing:.04em}
+.cpn-header__sub{font-size:11px;color:var(--mt);margin-top:8px;letter-spacing:.08em}
+
+.cpn-card{
+  background:linear-gradient(135deg,var(--bk2),#1A1F33);border-radius:2px;padding:22px 18px;text-align:center;
+  box-shadow:0 12px 40px rgba(0,0,0,.5);position:relative;overflow:hidden;
+  margin-bottom:16px;border:1px solid var(--bdr);
+  opacity:0;transform:translateY(20px) scale(.95);
+  transition:all .5s cubic-bezier(.34,1.56,.64,1);
+}
+.cpn-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.cpn-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent)}
+.cpn-card.vis{opacity:1;transform:translateY(0) scale(1)}
+.cpn-card__num{font-family:var(--serif);font-weight:500;font-size:11px;color:var(--gold);letter-spacing:.3em;margin-bottom:8px;text-transform:uppercase}
+.cpn-card__title{font-weight:700;font-size:15px;margin-bottom:10px;line-height:1.45;color:var(--ivory);font-family:var(--serif);letter-spacing:.04em}
+.cpn-card__price{font-family:var(--num);font-weight:700;font-size:44px;color:var(--gold-l);line-height:1;display:flex;align-items:baseline;justify-content:center;gap:3px;letter-spacing:.02em}
+.cpn-card__price .yen{font-family:'Noto Serif JP',serif;font-size:20px;font-weight:600;color:var(--gold)}
+.cpn-card__note{font-size:10px;color:var(--mt);margin-top:8px;letter-spacing:.08em}
+.cpn-card__desc{font-size:12px;color:var(--ivory2);margin-top:10px;line-height:1.7;font-weight:400}
+.cpn-card__icon{margin:0 auto 10px;width:48px;height:48px;background:var(--gold-bg);border:1px solid var(--gold-d);display:grid;place-items:center;transform:rotate(45deg)}
+.cpn-card__icon svg{width:22px;height:22px;color:var(--gold);transform:rotate(-45deg)}
+
+.cpn-close{display:block;margin:14px auto 0;padding:16px 42px;background:linear-gradient(135deg,var(--gold-d),var(--gold));color:#0B0E1A;border-radius:2px;font-weight:700;font-size:14px;box-shadow:0 8px 28px rgba(201,169,110,.4),inset 0 1px 0 rgba(255,255,255,.2);transition:all .25s;letter-spacing:.14em;text-transform:uppercase;font-family:var(--serif)}
+.cpn-close:hover{transform:translateY(-1px);box-shadow:0 10px 32px rgba(201,169,110,.55)}
+.cpn-close:active{transform:scale(.98)}
+
+/* ===== FIELD ===== */
+.field{background:var(--bk2);border:1px solid var(--bdr);border-radius:2px;padding:16px;box-shadow:var(--shc);max-width:92%;scroll-margin-top:70px}
+.field__l{font-size:11px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:8px;color:var(--gold);letter-spacing:.18em;text-transform:uppercase;font-family:var(--serif)}
+.field__l .bdg{background:transparent;color:var(--gold);font-size:9px;padding:2px 8px;border:1px solid var(--gold-d);font-weight:500;letter-spacing:.12em}
+.field__sel{width:100%;padding:13px 16px;border:1px solid var(--bdr);border-radius:2px;background:var(--bk);font-size:16px;color:var(--ivory);appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath d='M3 5L7 9L11 5' stroke='%23C9A96E' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;font-family:inherit}
+.field__sel:focus{outline:none;border-color:var(--gold)}
+.field__help{font-size:10px;color:var(--mt);margin-top:10px;line-height:1.6;letter-spacing:.04em}
+
+/* ===== CALENDAR ===== */
+.cal{background:var(--bk2);border:1px solid var(--bdr);border-radius:2px;padding:16px;box-shadow:var(--shc);max-width:96%;scroll-margin-top:70px}
+.cal__head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.cal__month{font-weight:600;font-size:14px;color:var(--ivory);letter-spacing:.08em;font-family:var(--serif)}
+.cal__nav{display:flex;gap:8px}
+.cal__nav button{width:30px;height:30px;border-radius:50%;background:var(--bk);border:1px solid var(--gold-d);display:grid;place-items:center;color:var(--gold)}
+.cal__nav svg{width:12px;height:12px}
+.cal__dow{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:6px;text-align:center;font-size:9px;font-weight:500;color:var(--mt);letter-spacing:.08em;font-family:var(--serif)}
+.cal__dow span:first-child{color:#D88B98}
+.cal__dow span:last-child{color:#9BB3D1}
+.cal__grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal__day{
+  aspect-ratio:1;border-radius:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;position:relative;
+  background:var(--bk);border:1px solid var(--bdr2);color:var(--ivory);font-family:var(--num);
+}
+.cal__day:hover{background:var(--bk3);border-color:var(--gold-d)}
+.cal__day.empty{visibility:hidden}
+.cal__day.past{opacity:.25;cursor:default;pointer-events:none}
+.cal__day.past::after{content:'満席';position:absolute;bottom:0;font-size:6px;color:#D88B98;font-weight:600;font-family:'Noto Serif JP'}
+.cal__day.sun{color:#D88B98}
+.cal__day.sat{color:#9BB3D1}
+.cal__day.sel{background:linear-gradient(135deg,var(--gold-d),var(--gold));color:#0B0E1A;border-color:var(--gold-l);font-weight:700}
+.cal__day.sel.sun,.cal__day.sel.sat{color:#0B0E1A}
+.cal__day .pop-tag{position:absolute;top:-1px;right:-1px;width:6px;height:6px;background:var(--gold);border-radius:50%;box-shadow:0 0 4px var(--gold)}
+
+/* pref rows */
+.pref{margin-top:14px}
+.pref__row{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;font-weight:500}
+.pref__label{min-width:56px;color:var(--gold);flex-shrink:0;font-size:10px;letter-spacing:.15em;font-family:var(--serif);text-transform:uppercase}
+.pref__date{flex:1;padding:10px;border:1px solid var(--bdr);border-radius:2px;background:var(--bk);font-size:12px;text-align:center;color:var(--mt);min-height:38px;display:flex;align-items:center;justify-content:center;letter-spacing:.04em}
+.pref__date.filled{border-color:var(--gold);color:var(--gold-l);background:var(--gold-bg)}
+.pref__time{width:80px}
+.pref__time select{width:100%;padding:9px 4px;border:1px solid var(--bdr);border-radius:2px;background:var(--bk);font-size:11px;font-weight:600;text-align:center;appearance:none;color:var(--ivory);font-family:var(--num)}
+.pref__time select:focus{outline:none;border-color:var(--gold)}
+.pref__clear{width:24px;height:24px;border-radius:50%;background:var(--bk3);border:1px solid var(--bdr2);display:grid;place-items:center;flex-shrink:0}
+.pref__clear svg{width:10px;height:10px;color:var(--mt)}
+
+/* ===== SOCIAL ===== */
+.soc{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,var(--gold-bg),rgba(155,179,209,.06));border:1px solid var(--bdr);padding:14px 16px;border-radius:2px;max-width:92%}
+.soc__dots{display:flex;margin-right:-2px}
+.soc__dots span{width:22px;height:22px;border-radius:50%;border:2px solid var(--bk);margin-left:-8px}
+.soc__dots span:nth-child(1){background:linear-gradient(135deg,#2A3044,#1A1F33)}
+.soc__dots span:nth-child(2){background:linear-gradient(135deg,#3A4060,#252B45)}
+.soc__dots span:nth-child(3){background:linear-gradient(135deg,#4A5175,#2F3550)}
+.soc__dots span:nth-child(4){background:linear-gradient(135deg,#5A6388,#353C5A)}
+.soc__txt{font-size:10px;line-height:1.7;font-weight:400;color:var(--ivory2);letter-spacing:.04em}.soc__txt strong{color:var(--gold);font-weight:600;font-family:var(--num)}
+
+/* ===== GIFT SUMMARY ===== */
+.gift{max-width:94%;background:var(--bk2);border-radius:2px;overflow:hidden;box-shadow:var(--shc);border:1px solid var(--bdr);position:relative}
+.gift::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.gift__head{background:linear-gradient(135deg,#141827,#1C2238);color:var(--ivory);padding:18px 16px;text-align:center;border-bottom:1px solid var(--bdr)}
+.gift__head h3{font-size:15px;font-weight:700;font-family:var(--serif);letter-spacing:.08em;color:var(--gold-l)}
+.gift__head p{font-size:10px;opacity:.75;margin-top:6px;letter-spacing:.1em}
+.gift__list{padding:14px 18px}
+.gift__item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--bdr2)}
+.gift__item:last-child{border-bottom:none}
+.gift__ico{width:34px;height:34px;background:var(--gold-bg);border:1px solid var(--bdr);display:grid;place-items:center;flex-shrink:0;transform:rotate(45deg)}
+.gift__ico svg{width:16px;height:16px;color:var(--gold);transform:rotate(-45deg)}
+.gift__info{flex:1;font-size:12px;line-height:1.6;color:var(--ivory2)}
+.gift__info strong{display:block;font-weight:600;font-size:13px;color:var(--ivory);font-family:var(--serif)}
+.gift__val{font-family:var(--num);font-weight:700;color:var(--gold-l);font-size:14px;flex-shrink:0;letter-spacing:.02em}
+
+/* ===== URGENCY ===== */
+.urg{display:inline-flex;align-items:center;gap:8px;background:rgba(139,31,47,.15);color:#D88B98;border:1px solid rgba(139,31,47,.4);padding:8px 14px;border-radius:2px;font-size:10px;font-weight:500;letter-spacing:.1em;font-family:var(--serif)}
+.urg::before{content:'';width:6px;height:6px;background:#D88B98;border-radius:50%;animation:bl 1.2s ease-in-out infinite;box-shadow:0 0 6px #D88B98}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ===== FINAL CTA ===== */
+.fcta{position:fixed;bottom:0;left:0;right:0;z-index:100;max-width:480px;margin:0 auto;padding:0;pointer-events:none;opacity:0;transition:opacity .3s}
+.fcta.show{opacity:1;pointer-events:auto}
+.fcta__inner{background:linear-gradient(to top,var(--bk),rgba(11,14,26,.95));padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--bdr);box-shadow:0 -8px 30px rgba(0,0,0,.5);backdrop-filter:blur(10px)}
+.fcta__micro{text-align:center;font-size:10px;color:var(--mt);margin-bottom:8px;line-height:1.5;font-weight:400;letter-spacing:.08em}
+.fcta__micro strong{color:var(--gold)}
+.fcta__btn{width:100%;padding:17px;background:var(--line);color:#fff;border-radius:2px;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 8px 28px rgba(6,199,85,.4);animation:pc 1.8s ease-in-out infinite;letter-spacing:.06em;position:relative;overflow:hidden}
+.fcta__btn::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transform:translateX(-100%);animation:shine 3s ease-in-out infinite}
+@keyframes shine{0%,60%{transform:translateX(-100%)}70%,100%{transform:translateX(100%)}}
+@keyframes pc{0%,100%{box-shadow:0 8px 28px rgba(6,199,85,.4)}50%{box-shadow:0 8px 36px rgba(6,199,85,.65),0 0 0 8px rgba(6,199,85,.08)}}
+.fcta__btn:active{transform:scale(.98)}
+.fcta__btn svg{width:22px;height:22px;flex-shrink:0}
+.fcta__sub{text-align:center;font-size:9px;color:var(--mt);margin-top:6px;line-height:1.5;letter-spacing:.08em}
+
+/* activated card — full width gift-box */
+.act-wrap{margin:16px -16px 16px;scroll-margin-top:70px}
+.activated{
+  border-radius:0;overflow:hidden;
+  background:linear-gradient(135deg,#0A0D18,#141827);
+  box-shadow:0 8px 30px rgba(0,0,0,.6);color:var(--ivory);
+  position:relative;border-top:1px solid var(--gold);border-bottom:1px solid var(--gold);
+}
+.activated::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 30% 20%,rgba(201,169,110,.15),transparent 60%),
+    radial-gradient(circle at 80% 80%,rgba(201,169,110,.08),transparent 50%);
+  pointer-events:none;
+}
+/* ribbon — luxury gold seal */
+.act-ribbon{
+  position:relative;text-align:center;padding:12px 0 10px;
+  background:linear-gradient(135deg,var(--gold-d),var(--gold));color:#0B0E1A;
+  font-size:10px;font-weight:700;letter-spacing:.3em;font-family:var(--serif);
+}
+.act-ribbon::before,.act-ribbon::after{
+  content:'';position:absolute;bottom:-8px;width:0;height:0;
+  border-style:solid;
+}
+.act-ribbon::before{left:0;border-width:8px 12px 0 0;border-color:var(--gold-d) transparent transparent}
+.act-ribbon::after{right:0;border-width:8px 0 0 12px;border-color:var(--gold-d) transparent transparent}
+.act-bow{
+  position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+  width:52px;height:30px;
+}
+.act-bow::before,.act-bow::after{
+  content:'';position:absolute;top:4px;width:22px;height:18px;
+  border-radius:50%;border:2px solid var(--gold);background:rgba(201,169,110,.2);
+}
+.act-bow::before{left:0;transform:rotate(-20deg)}
+.act-bow::after{right:0;transform:rotate(20deg)}
+.act-bow span{
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:8px;height:10px;background:var(--gold);
+}
+.activated__inner{position:relative;padding:34px 20px 28px;text-align:center}
+.activated__icon{margin:0 auto 14px;width:58px;height:58px;background:var(--gold-bg);border:1px solid var(--gold);display:grid;place-items:center;transform:rotate(45deg)}
+.activated__icon svg{width:28px;height:28px;color:var(--gold);transform:rotate(-45deg)}
+.activated__title{font-size:18px;font-weight:700;line-height:1.5;margin-bottom:8px;font-family:var(--serif);letter-spacing:.04em;color:var(--ivory)}
+.activated__sub{font-size:11px;opacity:.7;margin-bottom:20px;letter-spacing:.08em}
+.activated__timer{
+  display:inline-flex;align-items:center;gap:10px;
+  background:rgba(0,0,0,.4);backdrop-filter:blur(8px);
+  padding:12px 24px;border-radius:2px;
+  font-family:var(--num);font-weight:700;font-size:26px;
+  letter-spacing:.1em;border:1px solid var(--gold-d);color:var(--gold-l);
+}
+.activated__timer-label{font-size:9px;font-weight:600;letter-spacing:.24em;color:var(--gold);font-family:var(--serif);text-transform:uppercase}
+.activated__sparkles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.activated__sparkle{
+  position:absolute;width:3px;height:3px;background:var(--gold);border-radius:50%;
+  animation:sparkle 2s ease-in-out infinite;
+  box-shadow:0 0 6px var(--gold);
+}
+@keyframes sparkle{0%,100%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1)}}
+
+.footer{padding:20px 16px 180px;font-size:9px;color:var(--mt);text-align:center;line-height:1.8;display:none;letter-spacing:.08em}
+.footer a{text-decoration:underline;margin:0 5px;color:var(--gold-d)}
+
+.hidden{display:none!important}
+@keyframes floatCTA{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes swipeX{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
+@keyframes swipeHint{0%,100%{transform:translateY(-50%) translateX(0);opacity:.6}50%{transform:translateY(-50%) translateX(8px);opacity:1}}
+@media(max-width:360px){.bbl{font-size:13px}.cpn-card__price{font-size:38px}}
+
+/* ===== SCRATCH CARD ===== */
+.sc-overlay{position:fixed;inset:0;background:rgba(5,7,14,.92);z-index:160;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(10px);opacity:0;transition:opacity .35s}
+.sc-overlay.show{display:flex;opacity:1}
+.sc-wrap{width:100%;max-width:360px;position:relative;text-align:center}
+.sc-header__badge{display:inline-block;color:var(--gold);padding:6px 18px;border:1px solid var(--gold);font-size:10px;font-weight:500;letter-spacing:.3em;margin-bottom:14px;font-family:var(--serif);text-transform:uppercase;background:rgba(11,14,26,.4)}
+.sc-header__title{font-size:18px;font-weight:700;color:var(--ivory);line-height:1.6;margin-bottom:18px;font-family:var(--serif);letter-spacing:.04em}
+.sc-header__title em{font-style:normal;color:var(--gold-l);display:block;font-size:13px;font-weight:500;margin-top:4px;letter-spacing:.2em;text-transform:uppercase}
+.sc-card{
+  position:relative;width:100%;aspect-ratio:5/4;
+  background:linear-gradient(135deg,#0F1220,#1A1F33);
+  border:1px solid var(--gold);
+  box-shadow:0 20px 60px rgba(0,0,0,.6),inset 0 0 40px rgba(201,169,110,.1);
+  overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:none;
+}
+.sc-reveal{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:20px;text-align:center;
+  background:radial-gradient(ellipse at center,rgba(201,169,110,.15),transparent 70%);
+}
+.sc-trophy{
+  width:72px;height:72px;border-radius:50%;
+  background:radial-gradient(circle,var(--gold-l),var(--gold-d));
+  display:grid;place-items:center;margin-bottom:14px;
+  box-shadow:0 0 30px rgba(201,169,110,.5),inset 0 -4px 10px rgba(0,0,0,.3);
+  position:relative;
+}
+.sc-trophy::before{
+  content:'';position:absolute;inset:-6px;border-radius:50%;border:1px dashed var(--gold);
+  animation:spin 8s linear infinite;opacity:.6;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sc-trophy svg{width:40px;height:40px;color:#0B0E1A}
+.sc-lucky{
+  font-family:var(--serif);font-weight:700;font-size:38px;color:var(--gold-l);
+  letter-spacing:.18em;line-height:1;margin-bottom:8px;
+  text-shadow:0 2px 20px rgba(201,169,110,.4);
+}
+.sc-congrats{font-family:var(--serif);font-size:15px;color:var(--ivory);font-weight:500;letter-spacing:.12em;margin-bottom:8px}
+.sc-detail{font-size:11px;color:var(--gold);letter-spacing:.2em;font-family:var(--serif);text-transform:uppercase}
+#scCanvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;display:block}
+.sc-finger{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  pointer-events:none;color:rgba(11,14,26,.85);z-index:5;
+  transition:opacity .4s;gap:10px;
+}
+.sc-finger.hide{opacity:0}
+.sc-finger__icon{
+  animation:fingerRub 1.6s ease-in-out infinite;
+}
+@keyframes fingerRub{
+  0%,100%{transform:translateX(-20px) rotate(-6deg)}
+  50%{transform:translateX(20px) rotate(6deg)}
+}
+.sc-finger__text{font-weight:700;font-size:13px;font-family:'Noto Serif JP';letter-spacing:.1em;background:rgba(11,14,26,.8);color:var(--gold);padding:6px 14px;border:1px solid var(--gold-d)}
+.sc-progress{margin-top:18px;height:2px;background:var(--bdr2);overflow:hidden;max-width:260px;margin-left:auto;margin-right:auto}
+.sc-progress__bar{height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold-l));width:0%;transition:width .15s ease}
+.sc-hint-text{margin-top:10px;font-size:10px;color:var(--mt);letter-spacing:.14em;font-family:var(--serif);text-transform:uppercase}
+.sc-claim{
+  margin-top:22px;padding:17px 44px;
+  background:linear-gradient(135deg,var(--gold-d),var(--gold-l));color:#0B0E1A;
+  font-weight:700;font-size:14px;letter-spacing:.2em;font-family:var(--serif);text-transform:uppercase;
+  border-radius:2px;box-shadow:0 10px 32px rgba(201,169,110,.5),inset 0 1px 0 rgba(255,255,255,.3);
+  transform:translateY(20px);opacity:0;transition:all .6s cubic-bezier(.34,1.56,.64,1);
+}
+.sc-claim.vis{opacity:1;transform:translateY(0)}
+.sc-claim:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(201,169,110,.65)}
+.sc-claim:active{transform:scale(.98)}
+.sc-unlock-glow{
+  position:absolute;inset:-20px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,169,110,.3),transparent 70%);
+  opacity:0;pointer-events:none;z-index:10;
+  transition:opacity .8s;
+}
+.sc-overlay.unlocked .sc-unlock-glow{opacity:1;animation:pulseGlow 2s ease-in-out infinite}
+@keyframes pulseGlow{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.1);opacity:.6}}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <div class="prog"><div class="prog__bars" id="pBars"></div><div class="prog__m"><span id="pLbl">Step 1</span><strong id="pRem"></strong></div></div>
+  <div class="top">
+    <div class="top__av">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="#C9A96E"><path transform="translate(1.4,8.55) scale(0.3)" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/><path transform="translate(6.6,4.825) scale(0.45)" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/><path transform="translate(15.4,8.55) scale(0.3)" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    </div>
+    <div class="top__nm">KENT<small>Private Consultant</small></div>
+  </div>
+  <div class="chat" id="chat"></div>
+
+  <!-- Coupon popup -->
+  <div class="cpn-overlay" id="cpnOv"><div class="cpn-wrap" id="cpnWrap"></div></div>
+  <canvas id="confetti"></canvas>
+
+  <div class="fcta" id="fcta"><div class="fcta__inner">
+    <p class="fcta__micro">電子カルテの情報が <strong>自動でLINEに同期</strong>されます</p>
+    <button class="fcta__btn" onclick="openLine()">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M19.365 10.41C19.365 7.103 16.043 4.42 11.96 4.42c-4.083 0-7.404 2.683-7.404 5.99 0 2.963 2.632 5.444 6.183 5.915.241.052.569.159.651.364.074.186.048.478.024.667l-.105.631c-.033.186-.148.73.638.398.786-.332 4.243-2.498 5.79-4.277h-.001c1.068-1.17 1.629-2.358 1.629-3.698z" fill="currentColor"/><path d="M9.053 8.86h-.52c-.08 0-.144.064-.144.143v3.228c0 .079.065.143.144.143h.52c.08 0 .144-.064.144-.143V9.003c0-.079-.064-.143-.144-.143zM12.629 8.86h-.52a.143.143 0 00-.143.143v1.917L10.49 8.923a.137.137 0 00-.012-.014l-.009-.008a.114.114 0 00-.012-.01l-.007-.004a.111.111 0 00-.014-.008l-.006-.003a.111.111 0 00-.014-.006l-.007-.002-.015-.004h-.008l-.015-.002H9.85a.143.143 0 00-.143.143v3.228c0 .079.064.143.143.143h.52a.143.143 0 00.143-.143v-1.916l1.479 1.999a.147.147 0 00.037.036l.008.005a.12.12 0 00.014.007l.007.003a.11.11 0 00.011.004l.011.003.007.002a.151.151 0 00.037.005h.52a.143.143 0 00.143-.143V9.003a.143.143 0 00-.143-.143zM7.795 11.57H6.383V9.003a.143.143 0 00-.143-.143h-.52a.143.143 0 00-.143.143v3.228c0 .038.015.073.04.098l.002.002.001.002c.025.025.06.04.099.04h2.076c.08 0 .143-.064.143-.144v-.52a.143.143 0 00-.143-.143zM16.253 9.666a.143.143 0 00.143-.143v-.52a.143.143 0 00-.143-.143h-2.076a.143.143 0 00-.099.04l-.002.002-.001.002a.14.14 0 00-.04.098v3.228a.14.14 0 00.04.098l.002.002.001.002c.025.025.06.04.099.04h2.076c.08 0 .143-.064.143-.144v-.52a.143.143 0 00-.143-.143H14.84v-.546h1.412a.143.143 0 00.143-.143v-.52a.143.143 0 00-.143-.144H14.84v-.546h1.412z" fill="#fff"/></svg>
+      LINE追加で特典を受領する
+    </button>
+    <p class="fcta__sub">あなた様専用の特典がLINEに届きます</p>
+  </div></div>
+  <footer class="footer" id="ft">※自由診療／副作用:内出血・腫れ・鈍痛(1〜2週間)／効果には個人差があります<br/><a href="#">運営者情報</a><a href="#">プライバシーポリシー</a></footer>
+</div>
+
+<script>
+'use strict';
+
+const CONFIG={
+  BOT_BASIC_ID:'897vblrf',
+  REDIRECT_URL:'',
+  VAR_IDS:{gender:'2184987',age:'2184988',body_parts:'2184994',diet_history:'2460256',coupon:'2184995',clinic_area:'2184547',clinic:'2184548',reserve_date1:'2184549',reserve_time1:'2184551',reserve_date2:'2349620',reserve_time2:'2349621',reserve_date3:'2433744',reserve_time3:'2433745',lp_source:'2504096'},
+  LP_ID:'sururim_chatbot_mens_v1'
+};
+
+const ST={step:0,a:{gender:'男性',age:'',body_parts:[],diet:[],area:'',clinic:'',prefs:[],coupon:'男性向け3大特典'}};
+
+/* ===== PROFILE 分岐 =====
+   diet履歴に「筋トレ」を含む → muscle: 筋肉残し訴求
+   含まない（または"特に無し"のみ）→ ease: 楽痩せ・運動不要訴求
+*/
+function getProfile(){
+  const diet=ST.a.diet||[];
+  return diet.includes('筋トレ')?'muscle':'ease';
+}
+
+/* ===== SVG ICONS ===== */
+const ICO={
+  chin:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M6 10c0-4 3-7 6-7s6 3 6 7v2c0 4-3 7-6 9-3-2-6-5-6-9z"/><circle cx="10" cy="10" r=".8" fill="currentColor"/><circle cx="14" cy="10" r=".8" fill="currentColor"/></svg>`,
+  belly:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M8 4v4M16 4v4M6 8h12l-1 12H7z"/><path d="M10 12v2M14 12v2M10 16v2M14 16v2"/></svg>`,
+  waist:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M6 4c1 3 1 6 0 9s-1 5 0 7M18 4c-1 3-1 6 0 9s1 5 0 7"/><path d="M6 13h12"/></svg>`,
+  back:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 3h10l-1 4-1 14h-6L8 7z"/><path d="M12 7v14M8 10h8"/></svg>`,
+  chest:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M4 8c0-2 2-4 5-4 2 0 3 1 3 2 0-1 1-2 3-2 3 0 5 2 5 4 0 3-2 6-8 8-6-2-8-5-8-8z"/><path d="M12 6v8"/></svg>`,
+  thigh:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M8 3v5c0 2-1 4-1 8v5M16 3v5c0 2 1 4 1 8v5"/><path d="M7 11h10"/></svg>`,
+  arm:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M6 4c0 4 1 6 3 8 2 1 3 4 3 8"/><path d="M18 4c0 4-1 6-3 8-2 1-3 4-3 8"/><path d="M9 11c1 2 3 2 6 0"/></svg>`,
+  calf:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M9 3v8c0 3 0 5-1 7v3M15 3v8c0 3 0 5 1 7v3"/><path d="M10 10c1 1 3 1 4 0"/></svg>`,
+  muscle:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M4 12c2-2 2-4 4-4 1 0 2 1 3 1 2 0 4-2 7-1 2 1 2 5 0 6-3 1-5-1-7-1-1 0-2 1-3 1-2 0-4-2-4 0"/><path d="M7 10v4M11 10v4"/></svg>`,
+  run:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="14" cy="4" r="2"/><path d="M4 17l4-3 2 2 4-4 2 1"/><path d="M16 14l2 6M10 16l-2 5"/></svg>`,
+  weight:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="2" y="9" width="3" height="6"/><rect x="19" y="9" width="3" height="6"/><rect x="5" y="11" width="14" height="2"/><path d="M6 7v10M18 7v10"/></svg>`,
+  salad:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M4 14c0 4 3.6 7 8 7s8-3 8-7"/><path d="M4 14h16"/><path d="M8 14V8l4-2 4 2v6"/></svg>`,
+  pill:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="8" y="2" width="8" height="20" rx="4"/><line x1="8" y1="12" x2="16" y2="12"/></svg>`,
+  fast:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>`,
+  chk:`<svg viewBox="0 0 14 14"><path d="M11 4L6 9L3 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`,
+  arr:`<svg viewBox="0 0 20 20" fill="none"><path d="M7 4L13 10L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  gift:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="8" width="18" height="13"/><path d="M12 8v13M3 12h18"/><path d="M12 8c-2-3-5-4-5-2s3 2 5 2 5 0 5-2-3-1-5 2z"/></svg>`,
+  star:`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,
+  cal:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+  clock:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+  tag:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>`,
+  crown:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18h20M3 7l4 6 5-8 5 8 4-6v11H3z"/><circle cx="12" cy="13" r="1" fill="currentColor"/></svg>`,
+  shield:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L3 5v7c0 5 4 9 9 10 5-1 9-5 9-10V5l-9-3z"/><path d="M9 12l2 2 4-4"/></svg>`,
+  diamond:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M6 3h12l3 6-9 12L3 9z"/><path d="M3 9h18M9 3l3 6 3-6M12 9l-3 12M12 9l3 12"/></svg>`,
+  syringe:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M18 2l4 4M15 5l6 6-11 11H4v-6L15 5z"/><path d="M8 16l-2-2"/></svg>`,
+  trophy:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v4a6 6 0 01-12 0V4z"/><path d="M6 6H3v2a3 3 0 003 3M18 6h3v2a3 3 0 01-3 3M10 14h4v4h-4z"/><path d="M7 22h10"/></svg>`,
+  finger:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5a2 2 0 014 0v9"/><path d="M13 9a2 2 0 014 0v5"/><path d="M17 11a2 2 0 014 0v5a6 6 0 01-6 6h-1c-2 0-3-1-4-2l-7-7a2 2 0 012-3"/></svg>`,
+};
+function icon(name,w=18){return `<span style="display:inline-flex;width:${w}px;height:${w}px;flex-shrink:0">${ICO[name]||''}</span>`}
+
+/* ===== CLINICS (from juno official form screenshots) ===== */
+const CLINICS={
+  '北海道・東北':['札幌店（大通駅）','旭川店（旭川駅）','青森店（青森駅）','秋田店（秋田駅）','仙台店（仙台駅）','福島店（郡山駅）'],
+  '関東':['新宿店（新宿東口）','渋谷店（文化村通り）','銀座店（銀座駅）','池袋店（サンシャイン通り）','表参道店（表参道）','広尾店（広尾駅）','錦糸町店（錦糸町）','吉祥寺店（吉祥寺）','八王子店（八王子駅）','町田店（町田駅）','横浜駅前店（横浜駅）','川崎店（川崎駅）','藤沢店（藤沢駅）','海老名店（海老名駅）','大宮店（大宮駅）','浦和店（浦和駅）','川口店（川口駅）','川越店（川越駅）','千葉店（千葉駅）','柏店（柏駅）','松戸店（松戸駅）','水戸店（水戸駅）','宇都宮店（宇都宮駅）','高崎店（高崎駅）'],
+  '中部':['名古屋店（名古屋駅）','栄店（栄駅）','浜松店（新浜松駅）','静岡店（静岡駅北口）','新潟店（新潟駅）','長野店（長野駅）','金沢店（金沢駅）','岐阜店（名鉄岐阜駅）','四日市店（四日市駅）'],
+  '関西':['梅田店（梅田駅）','心斎橋店（心斎橋駅）','京都店（京都駅）','神戸三宮店（三宮駅）'],
+  '中国・四国':['広島店（立町駅）','高松店（高松駅）'],
+  '九州・沖縄':['福岡天神店（天神南駅）','熊本店（熊本駅）','鹿児島店（鹿児島中央駅）'],
+};
+
+/* ===== STEPS ===== */
+const STEPS=[
+  {id:'intro',type:'bot',msgs:['ようこそ。プライベートコンサルタントの <strong>KENT</strong> でございます。','本日は、<em>切らず・筋肉は残したまま</em>・<em>皮下脂肪細胞の"数"を破壊</em>し、リバウンドしにくい身体へ導く医療プログラム「<strong>スルリム式 for MEN</strong>」をご案内させていただきます。','いくつかお伺いさせてください。'],auto:true},
+  {id:'age',type:'choice',key:'age',prompt:'まず、お客様の年代をお聞かせいただけますでしょうか。',opts:[{l:'〜20代前半',v:'20代前半'},{l:'20代後半',v:'20代後半'},{l:'30代前半',v:'30代前半'},{l:'30代後半',v:'30代後半'},{l:'40代',v:'40代'},{l:'50代以上',v:'50代以上'}],grid:true},
+  {id:'e1',type:'bot',msgs:['かしこまりました。','男性のお身体は<strong>30代以降、基礎代謝が年1%ずつ低下</strong>し、筋肉量は変わらずとも皮下脂肪だけが残りやすくなります。','では——<strong>最も重要なご質問</strong>をさせてください。'],auto:true},
+  {id:'parts',type:'choice',key:'body_parts',prompt:'<strong>現在、最も気になっていらっしゃる部位</strong>はどちらでしょうか。<br/><small style="color:var(--mt)">複数お選びいただけます</small>',
+    opts:[
+      {l:'下腹部 ─ ぽっこり',v:'下腹部'},
+      {l:'脇腹 ─ 浮き輪肉',v:'脇腹'},
+      {l:'上腹部 ─ 腹筋が隠れる',v:'上腹部'},
+      {l:'アゴ下 ─ 二重アゴ',v:'アゴ下'},
+      {l:'胸まわり ─ バスト脂肪',v:'胸部'},
+      {l:'背中 ─ ハミ肉',v:'背中'},
+      {l:'太もも ─ 内側・付根',v:'太もも内側'},
+      {l:'二の腕 ─ 上腕',v:'二の腕'},
+    ],multi:true},
+  {id:'e2',type:'bot',msgs:['承知いたしました。','お客様が選ばれた部位は、<em>筋トレでも食事制限でも落ちにくい「皮下脂肪」</em>の代表格でいらっしゃいます。','なぜそこだけ残り続けるのか、そのメカニズムをご説明させていただきます。'],auto:true},
+  {id:'edu',type:'edu'},
+  {id:'diet',type:'choice',key:'diet',prompt:'差し支えなければ、これまで取り組まれた減量法をお聞かせください。',
+    opts:[
+      {l:'筋トレ・ジム',v:'筋トレ'},
+      {l:'ランニング・有酸素',v:'有酸素'},
+      {l:'糖質制限',v:'糖質制限'},
+      {l:'ファスティング',v:'ファスティング'},
+      {l:'プロテイン・サプリ',v:'サプリ'},
+      {l:'特に無し',v:'なし'},
+    ],multi:true},
+  {id:'e3',type:'bot',msgsFn:()=>{
+    const p=getProfile();
+    if(p==='muscle'){
+      return ['ご共有ありがとうございます。','弊院のコンサルテーションを受けられた30〜40代男性のうち、<strong>94%</strong>が「<em>筋トレはしているが、腹筋が皮下脂肪で隠れている</em>」というお悩みを抱えていらっしゃいました。'];
+    }
+    // ease: 運動嫌い・楽して痩せたい層
+    return ['ご共有ありがとうございます。','弊院のコンサルテーションを受けられた30〜40代男性のうち、<strong>94%</strong>が「<em>運動や食事制限は続かない、でも"そこだけ"何とかしたい</em>」と本音をお聞かせくださいました。'];
+  },special:'social',auto:true},
+  {id:'reasons',type:'reasons'},
+  {id:'ba',type:'ba'},
+  {id:'merit',type:'merit'},
+  {id:'coupon',type:'coupon'},
+  {id:'reserve-benefit',type:'reserve-benefit'},
+  {id:'area',type:'area'},
+  {id:'clinic',type:'clinic'},
+  {id:'reserve',type:'reserve'},
+  {id:'final',type:'final'},
+];
+
+/* ===== UTIL ===== */
+const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const sl=ms=>new Promise(r=>setTimeout(r,ms));
+function ce(t,c,h){const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e}
+let _sct;let _holdScroll=false;function scrollTo(el){if(!el||_holdScroll)return;clearTimeout(_sct);_sct=setTimeout(()=>{el.scrollIntoView({behavior:'smooth',block:'start'})},120)}
+const CH=()=>$('#chat');
+
+const AVSV=`<div class="av-s"><svg width="18" height="18" viewBox="0 0 24 24" fill="#C9A96E"><path transform="translate(1.4,8.55) scale(0.3)" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/><path transform="translate(6.6,4.825) scale(0.45)" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/><path transform="translate(15.4,8.55) scale(0.3)" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>`;
+function addBot(html){const w=ce('div','msg msg--b');w.innerHTML=AVSV+`<div class="bbl">${html}</div>`;CH().appendChild(w);return w}
+function addUsr(t){const w=ce('div','msg msg--u');w.innerHTML=`<div class="bbl">${t}</div>`;CH().appendChild(w);return w}
+function addCard(html){const w=ce('div','msg msg--b');w.innerHTML=AVSV+`<div style="max-width:88%">${html}</div>`;CH().appendChild(w);return w}
+async function showTyp(ms=800){const w=ce('div','msg msg--b');w.innerHTML=AVSV+`<div class="typ"><span></span><span></span><span></span></div>`;CH().appendChild(w);await sl(ms);w.remove()}
+
+function addStepNext(label,cb){const w=ce('div','step-next');const b=ce('button','step-next__btn',label+' '+icon('arr',12));b.addEventListener('click',()=>{w.remove();cb()});w.appendChild(b);CH().appendChild(w);scrollTo(w)}
+
+const GIFT_STEPS=[11]; // couponステップのindex（プレゼントアイコンを表示）
+function prog(){
+  const bars=$('#pBars');const total=STEPS.length-1;const cur=Math.min(ST.step,total);
+  bars.innerHTML='';
+  for(let i=0;i<total;i++){
+    const s=ce('div','prog__s'+(i<cur?' done':i===cur?' cur':''));
+    s.style.position='relative';
+    if(GIFT_STEPS.includes(i)){
+      s.innerHTML=`<div class="prog__icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13"/><path d="M12 8v13"/><path d="M3 12h18"/><path d="M12 8c-2-3-5-4-5-2s3 2 5 2 5 0 5-2-3-1-5 2z"/></svg></div>`;
+    }
+    bars.appendChild(s);
+  }
+  $('#pLbl').textContent=`STEP ${cur+1} / ${total}`;
+  const rem=Math.max(0,11-cur);
+  $('#pRem').innerHTML=rem>0?`あと${rem}問`:'COMPLETED';
+}
+
+/* ===== RENDER CHOICES ===== */
+function renderOpts(step){
+  const w=ce('div','opts');
+  step.opts.forEach(o=>{
+    const b=ce('button',step.multi?'opt opt--m':(step.grid?'opt opt--g':'opt'));
+    b.innerHTML=(o.ico?`<span class="opt__icon">${ICO[o.ico]||''}</span>`:'')+o.l;
+    b.dataset.v=o.v;
+    b.onclick=()=>{
+      if(step.multi){b.classList.toggle('sel');updateNb()}
+      else{$$('.opt',w).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');setTimeout(()=>commit(),280)}
+    };
+    w.appendChild(b);
+  });
+  CH().appendChild(w);
+
+  let nbW;
+  if(step.multi){
+    nbW=ce('div','nbw');const nb=ce('button','nb');nb.disabled=true;nb.id='nb_'+step.id;
+    nb.innerHTML='次へ '+icon('arr',12);nb.onclick=()=>commit();nbW.appendChild(nb);CH().appendChild(nbW);
+  }
+  // スクロールはrender側で制御済み — ここでは不要
+
+  function updateNb(){if(!step.multi)return;const s=$$('.opt.sel',w);$('#nb_'+step.id).disabled=s.length===0}
+  function commit(){
+    const sel=$$('.opt.sel',w);if(!sel.length)return;
+    $$('.opt',w).forEach(x=>{x.disabled=true;x.style.pointerEvents='none'});
+    if(nbW)nbW.remove();
+    const vals=sel.map(x=>x.dataset.v);const labels=sel.map(x=>x.textContent.trim());
+    if(step.multi){ST.a[step.key]=vals;addUsr(labels.join('、'))}else{ST.a[step.key]=vals[0];addUsr(labels[0])}
+    next(true);
+  }
+}
+
+/* ===== RENDER STEP ===== */
+async function render(){
+  const s=STEPS[ST.step];if(!s)return;prog();
+  switch(s.type){
+    case 'bot':{
+      const botMsgs=s.msgsFn?s.msgsFn():s.msgs;
+      for(let i=0;i<botMsgs.length;i++){
+        await showTyp(600+i*100);
+        const m=addBot(botMsgs[i]);
+        if(i===0) scrollTo(m); // 各ステップの1通目に必ずスクロール（ユーザーが見失わないように）
+        await sl(250);
+      }
+    }
+      if(s.special==='social'){await sl(200);const socCard=addCard(`<div class="soc"><div class="soc__dots"><span></span><span></span><span></span><span></span></div><div class="soc__txt">本日 <strong id="liveCount">${getLiveCount()}</strong> 名の男性がコンサルテーションを完了<br/><strong>89%</strong> が「もっと早く知りたかった」とご回答</div></div>`);scrollTo(socCard);startLiveCount()}
+      if(s.wait){addStepNext('続きを見る',()=>next())}
+      else if(s.auto){await sl(400);next()}
+      break;
+    case 'choice':{
+      await showTyp(600);
+      const prompt=addBot(s.prompt);scrollTo(prompt); // プロンプトの先頭にスクロール
+      await sl(200);renderOpts(s);
+      break;
+    }
+    case 'edu':await showTyp(700);await renderEdu();break;
+    case 'reasons':await showTyp(700);await renderReasons();break;
+    case 'ba':await showTyp(700);await renderBA();break;
+    case 'merit':await renderMerit();break;
+    case 'coupon':{
+      await showTyp(900);
+      const cm1=addBot('ここまでお時間をいただき、誠にありがとうございます。');scrollTo(cm1);
+      await sl(300);addBot('コンサルテーション結果に基づき、<strong>あなた様専用の特典</strong>を封入させていただきました。');
+      await sl(300);addBot('下のスクラッチカードで、特典の内容をお確かめください。');
+      await sl(300);
+      const cpnBtn=ce('div','nbw');cpnBtn.style.justifyContent='center';
+      cpnBtn.innerHTML=`<button class="nb" style="padding:15px 30px;font-size:13px;animation:floatCTA 2s ease-in-out infinite">${icon('diamond',16)} スクラッチで特典を獲得</button>`;
+      CH().appendChild(cpnBtn);
+      // 症例画像を見ている途中なので、ここでは自動スクロールしない。
+      // ユーザーが症例を見終わって下にスクロールした時にスクラッチボタンを発見する流れ。
+      // ただし以降の reserve-benefit/area/clinic/reserve ではスクロール再開する。
+      _holdScroll=false;
+      cpnBtn.querySelector('.nb').onclick=()=>{cpnBtn.remove();showScratchCard()};
+      break;
+    }
+    case 'reserve-benefit':
+      await showTyp(700);
+      const rbCard=addCard(`<div class="card" style="border-color:var(--gold);background:linear-gradient(135deg,var(--bk2),#1A1F33)">
+        <div class="card__t" style="color:var(--gold)">GIFT 04 ─ 優先仮押さえ権</div>
+        <div class="card__b">
+          <p>現在、スルリム式 for MENは <strong style="color:#D88B98">大変混み合っている</strong> 状況でございます。</p>
+          <p>特に <strong style="color:#D88B98;border-bottom:1px solid #D88B98;padding-bottom:1px">土日祝やお仕事帰りの時間帯</strong> は通常2〜3週間待ちとなっております。</p>
+          <p style="margin-top:12px;padding:14px;background:rgba(201,169,110,.06);border:1px solid var(--bdr)">
+            ${icon('crown',14)} <strong>このページ限定</strong>にて、人気枠を含めた<strong style="color:var(--gold-l)">優先的な仮押さえ</strong>をご案内可能です。次のステップで最寄りクリニックと希望日時をお選びください。
+          </p>
+        </div>
+      </div>`);
+      scrollTo(rbCard);await sl(2200);next();break;
+    case 'area':{await showTyp(600);const am=addBot('枠の仮押さえをさせていただく<strong>最寄りクリニック</strong>をお選びください。');scrollTo(am);await sl(200);renderAreaOpts();break;}
+    case 'clinic':{await showTyp(500);const cm=addBot('ご希望の店舗をお選びくださいませ。');scrollTo(cm);await sl(200);renderClinic();break;}
+    case 'reserve':{await showTyp(600);const rm=addBot(`${icon('cal',16)} <strong>優先仮予約</strong>の日時をお選びください。<br/><small style="color:var(--mt)">LINE経由限定にて <strong style="color:var(--gold-l)">土日祝の人気枠</strong> もご予約可能でございます</small>`);scrollTo(rm);await sl(200);renderCal();break;}
+    case 'final':await showTyp(900);await renderFinal();break;
+  }
+}
+// _sn = scroll-next: trueならユーザー操作直後→最初のレスポンスにスクロール
+let _sn=true;
+function next(userAction){ST.step++;_sn=!!userAction;if(ST.step<STEPS.length)render()}
+
+/* ===== MERIT (リッチカード) ===== */
+async function renderMerit(){
+  await showTyp(700);
+  const thankMsg=addBot('症例をご覧いただきありがとうございます。');
+  await sl(300);
+  const p=getProfile();
+  const m1=p==='muscle'
+    ? {ico:'shield',title:'皮下脂肪のみ狙い撃ち',desc:'筋肉・血管・神経には作用させず、<br/>鍛え上げた筋量はそのまま保持'}
+    : {ico:'shield',title:'運動せずに皮下脂肪を削ぐ',desc:'運動や食事我慢を頑張らずとも、<br/>気になる部位の脂肪だけピンポイント除去'};
+  const m3=p==='muscle'
+    ? {ico:'diamond',title:'脂肪細胞の"数"を破壊',desc:'最大35%を削減し、<br/>再肥大しにくい身体へ'}
+    : {ico:'diamond',title:'脂肪細胞の"数"を破壊',desc:'最大35%を削減。<br/>多少食べても戻りにくい体質に'};
+  const footCopy=p==='muscle'
+    ? '多忙なエグゼクティブの方々にも選ばれております'
+    : '運動嫌い・続けるのが苦手な方にも選ばれております';
+  const meritCard=addCard(`<div class="card card--merit">
+    <div class="card__t" style="color:var(--gold)">MERIT ─ スルリム式 for MEN</div>
+    <ul class="merit-list">
+      <li>
+        <span class="merit-ico">${icon(m1.ico,18)}</span>
+        <div class="merit-body"><strong>${m1.title}</strong><span>${m1.desc}</span></div>
+      </li>
+      <li>
+        <span class="merit-ico">${icon('clock',18)}</span>
+        <div class="merit-body"><strong>1部位およそ15分</strong><span>切開・麻酔不要。<br/>翌日から商談・会食もOK</span></div>
+      </li>
+      <li>
+        <span class="merit-ico">${icon(m3.ico,18)}</span>
+        <div class="merit-body"><strong>${m3.title}</strong><span>${m3.desc}</span></div>
+      </li>
+    </ul>
+    <div class="card__foot">${footCopy}</div>
+  </div>`);
+  if(!_holdScroll) scrollTo(meritCard);
+  await sl(500);next();
+}
+
+/* ===== EDU ===== */
+async function renderEdu(){
+  const eduCard=addCard(`<div class="card"><div class="card__t">なぜ"そこだけ"脂肪が落ちないのか</div><div class="card__b">
+    <div style="width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#0F1220,#1A1F33);display:grid;place-items:center;margin:10px 0;border:1px dashed var(--bdr);overflow:hidden;position:relative">
+      <div style="text-align:center;color:var(--gold);font-size:11px;font-weight:500;letter-spacing:.12em;font-family:var(--serif)">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="5 3 19 12 5 21"/></svg>
+        <br/>皮下脂肪が残るメカニズム<br/><small style="color:var(--mt);font-weight:400;letter-spacing:.08em">VIDEO / ANIMATION</small>
+      </div>
+    </div>
+    <p>運動・食事制限・筋トレ——どの方法でも、脂肪細胞の<span style="color:var(--gold-l);border-bottom:1px solid var(--gold-d);padding-bottom:1px">サイズ</span>が縮むだけで、<strong>数は減りません</strong>。</p>
+    <p>だから、少し食べすぎたり運動を止めれば <span style="color:var(--gold-l);border-bottom:1px solid var(--gold-d);padding-bottom:1px">残った脂肪細胞</span> がすぐ膨らみ、元通りに戻ってしまいます。</p>
+    <p>スルリム式は<strong>脂肪細胞の"数"自体を最大35%破壊</strong>。筋肉・血管・神経には作用させず、<em>気になる部位の皮下脂肪だけ</em>を選択的に除去します。</p>
+  </div></div>`);
+  scrollTo(eduCard);
+  await sl(800);next();
+}
+
+/* ===== REASONS ===== */
+async function renderReasons(){
+  const rMsg=addBot('男性のお客様にスルリム式が選ばれる<strong>5つの理由</strong>をご紹介いたします。');
+  scrollTo(rMsg);
+
+  const p=getProfile();
+  // profile で 01, 02 の訴求軸を切り替える
+  const r01=p==='muscle'
+    ? {num:'01',title:'皮下脂肪だけを選択除去',desc:'筋肉・血管・神経には作用せず、脂肪細胞のみに反応する医療成分を使用。鍛えた筋量はそのまま保持されます',ico:'shield'}
+    : {num:'01',title:'運動せずに皮下脂肪を破壊',desc:'脂肪細胞のみに反応する医療成分が、気になる部位の皮下脂肪だけをピンポイントで除去。辛い運動も食事我慢も不要です',ico:'shield'};
+  const r02=p==='muscle'
+    ? {num:'02',title:'脂肪細胞を最大35%破壊',desc:'細胞の"数"自体を減らすため、再肥大しにくい。筋トレやリバウンド対策が効きやすい体へ',ico:'diamond'}
+    : {num:'02',title:'脂肪細胞"数"を最大35%破壊',desc:'細胞の数そのものを減らすから、食べすぎても戻りにくい。「痩せては戻る」の無限ループから抜け出せます',ico:'diamond'};
+  const data=[
+    r01,r02,
+    {num:'03',title:'1部位およそ15分の施術',desc:'切開不要・麻酔不要。お仕事帰りのアポイントでも対応可能です。当日シャワー・翌日出社OK',ico:'clock'},
+    {num:'04',title:'翌日から商談・会食OK',desc:'ダウンタイムほぼなし。一時的な腫れや内出血は通常1〜2週間で改善いたします',ico:'crown'},
+    {num:'05',title:'韓国で男性向けに大バズ',desc:'ソウル・江南エリアの男性に爆発的に流行した施術を、JUNOが日本人男性の体質に合わせて独自に最適化',ico:'trophy'},
+  ];
+  const html=data.map(r=>`<div class="rsn"><div class="rsn__img">${icon(r.ico,52)}</div><div class="rsn__body"><div class="rsn__num">Reason ${r.num}</div><div class="rsn__title">${r.title}</div><div class="rsn__desc">${r.desc}</div></div></div>`).join('');
+  addCard(`<div><div class="reasons" id="rsnScroll">${html}</div><div class="rsn-arrow"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 4L13 10L7 16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>`);
+  setTimeout(()=>{const rs=$('#rsnScroll');if(rs){let p=0;const scroll=()=>{p+=0.8;rs.scrollLeft=p;if(p<120)requestAnimationFrame(scroll)};scroll()}},800);
+  await sl(4000);next();
+}
+
+/* ===== BA ===== */
+const BA=[
+  {part:'下腹部',cap:'<strong>T様 36歳 ｜ 下腹部</strong> <span class="ba-tag">#スルリム1回</span><br/>筋トレで腹筋は鍛えていたが、皮下脂肪で隠れて見えなかった腹筋が表に'},
+  {part:'脇腹',cap:'<strong>M様 42歳 ｜ 脇腹</strong> <span class="ba-tag">#スーツ</span><br/>スーツのウエストラインがスッキリ。オーダーを作り直さずにサイズダウン'},
+  {part:'アゴ下',cap:'<strong>K様 38歳 ｜ アゴ下</strong> <span class="ba-tag">#若見え</span><br/>フェイスラインがシャープに。会食やオンライン会議で第一印象が変化'},
+  {part:'胸部',cap:'<strong>S様 33歳 ｜ 胸部</strong> <span class="ba-tag">#バスト脂肪</span><br/>胸板が男性らしくフラットに。Tシャツの見え方に変化が'},
+];
+async function renderBA(){
+  const baMsg=addBot('実際に施術を受けられた方の症例をご覧いただけます。');
+  scrollTo(baMsg);
+  await sl(300);
+  const baBtn=ce('div','nbw');baBtn.style.justifyContent='center';
+  baBtn.innerHTML=`<button class="nb" style="padding:13px 26px">${icon('star',14)} スルリム式 Before / After</button>`;
+  CH().appendChild(baBtn);
+  await new Promise(resolve=>{baBtn.querySelector('.nb').onclick=()=>{baBtn.remove();resolve()}});
+  const sls=BA.map((_,i)=>`<div class="ba-sl"><div class="ba-h"><span class="ba-lb">BEFORE</span><div style="width:100%;height:100%;background:linear-gradient(135deg,#1A1F33,#252B45);display:grid;place-items:center;color:var(--mt);font-size:11px;font-weight:500;letter-spacing:.1em;font-family:var(--serif)">症例写真<br/>${BA[i].part}</div></div><div class="ba-h"><span class="ba-lb ba-lb--a">AFTER</span><div style="width:100%;height:100%;background:linear-gradient(135deg,#2A2318,#1F1B11);display:grid;place-items:center;color:var(--gold);font-size:11px;font-weight:500;letter-spacing:.1em;font-family:var(--serif)">施術後<br/>${BA[i].part}</div></div></div>`).join('');
+  const dots=BA.map((_,i)=>`<div class="ba-d${i===0?' on':''}" data-i="${i}"></div>`).join('');
+  const baCard=addCard(`<div class="ba-card"><div class="ba-hdr"><div class="ba-av"><svg width="18" height="18" viewBox="0 0 24 24" fill="#C9A96E"><path transform="translate(1.4,8.55) scale(0.3)" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/><path transform="translate(6.6,4.825) scale(0.45)" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/><path transform="translate(15.4,8.55) scale(0.3)" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div><div class="ba-mt"><strong>sururim_for_men</strong><small>Case Gallery</small></div></div><div class="ba-car"><div class="ba-sls" id="baSl">${sls}</div><button class="ba-ar ba-ar--p" id="baP"><svg viewBox="0 0 20 20" fill="none"><path d="M13 4L7 10L13 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><button class="ba-ar ba-ar--n" id="baN"><svg viewBox="0 0 20 20" fill="none"><path d="M7 4L13 10L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div><div class="ba-ds" id="baDs">${dots}</div><div class="ba-cap" id="baCap">${BA[0].cap}</div></div>`);
+
+  let idx=0;
+  const upd=()=>{$('#baSl').style.transform=`translateX(-${idx*100}%)`;$$('#baDs .ba-d').forEach((d,i)=>d.classList.toggle('on',i===idx));$('#baCap').innerHTML=BA[idx].cap};
+  setTimeout(()=>{
+    $('#baP')?.addEventListener('click',()=>{idx=(idx-1+BA.length)%BA.length;upd()});
+    $('#baN')?.addEventListener('click',()=>{idx=(idx+1)%BA.length;upd()});
+    $$('#baDs .ba-d').forEach((d,i)=>d.addEventListener('click',()=>{idx=i;upd()}));
+    let sx;$('#baSl')?.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});
+    $('#baSl')?.addEventListener('touchend',e=>{const ex=e.changedTouches[0].clientX;if(Math.abs(ex-sx)>40){idx=ex<sx?(idx+1)%BA.length:(idx-1+BA.length)%BA.length;upd()}},{passive:true});
+  },100);
+  scrollTo(baCard);
+  // ここでスクロールを止める。merit/coupon は裏で順次表示されるが
+  // ユーザーが症例画像をじっくり見られるよう、自動スクロールしない。
+  _holdScroll=true;
+  await sl(1500);next();
+}
+
+/* ===== COUPON POPUP ===== */
+function showCouponPopup(){
+  const ov=$('#cpnOv');const wrap=$('#cpnWrap');
+  wrap.innerHTML=`
+    <div class="cpn-header">
+      <div class="cpn-header__badge">For You Only</div>
+      <div class="cpn-header__title">あなた様専用の<br/>3大特典</div>
+      <div class="cpn-header__sub">コンサルテーション完了の御礼として</div>
+    </div>
+    <div class="cpn-card" id="cc1">
+      <div class="cpn-card__icon">${icon('diamond',22)}</div>
+      <div class="cpn-card__num">Gift 01</div>
+      <div class="cpn-card__title">初回限定 プレミアム価格</div>
+      <div class="cpn-card__price"><span>9,800</span><span class="yen">円</span></div>
+      <div class="cpn-card__note">税込 / 1部位あたり</div>
+      <div class="cpn-card__desc">期限内に枠の仮押さえを確定いただきますと有効化されます</div>
+    </div>
+    <div class="cpn-card" id="cc2">
+      <div class="cpn-card__icon">${icon('crown',22)}</div>
+      <div class="cpn-card__num">Gift 02</div>
+      <div class="cpn-card__title">2部位目以降も特別価格継続</div>
+      <div class="cpn-card__price"><span>14,800</span><span class="yen">円</span></div>
+      <div class="cpn-card__note">税込 / 何部位でも</div>
+      <div class="cpn-card__desc" style="margin-top:8px;font-size:10px;color:var(--mt)">※ 1部位のみのご利用でも可能でございます</div>
+    </div>
+    <div class="cpn-card" id="cc3">
+      <div class="cpn-card__icon">${icon('pill',22)}</div>
+      <div class="cpn-card__num">Gift 03</div>
+      <div class="cpn-card__title">人気の医療施術が1つ無料</div>
+      <div class="cpn-card__desc">飲む医療ダイエット・ボツリヌス施術・美容内服薬など<br/>お好きなメニューを1つお選びいただけます</div>
+    </div>
+    <button class="cpn-close" id="cpnClose">すべて受け取る</button>
+  `;
+  ov.classList.add('show');
+  fireConfetti();
+  setTimeout(()=>$('#cc1')?.classList.add('vis'),300);
+  setTimeout(()=>$('#cc2')?.classList.add('vis'),700);
+  setTimeout(()=>$('#cc3')?.classList.add('vis'),1100);
+  $('#cpnClose').onclick=()=>{ov.classList.remove('show');showActivatedCard()};
+}
+
+/* ===== CONFETTI ===== */
+function fireConfetti(){
+  const cv=$('#confetti');const ctx=cv.getContext('2d');
+  cv.width=window.innerWidth;cv.height=window.innerHeight;
+  const colors=['#C9A96E','#E4C889','#9A8248','#F5E6B8','#8B95A8','#E8E4DC'];
+  const ps=[];
+  for(let i=0;i<120;i++){ps.push({x:cv.width/2+Math.random()*200-100,y:cv.height/2-100,vx:(Math.random()-.5)*14,vy:Math.random()*-14-4,w:Math.random()*8+4,h:Math.random()*4+2,c:colors[Math.floor(Math.random()*colors.length)],r:Math.random()*360,rv:(Math.random()-.5)*12,a:1})}
+  let frame=0;const maxF=180;
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ps.forEach(p=>{p.vy+=.25;p.x+=p.vx;p.y+=p.vy;p.r+=p.rv;p.a=Math.max(0,1-frame/maxF);
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r*Math.PI/180);ctx.globalAlpha=p.a;
+      ctx.fillStyle=p.c;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore()});
+    frame++;if(frame<maxF)requestAnimationFrame(draw);else ctx.clearRect(0,0,cv.width,cv.height);
+  }
+  draw();
+}
+
+/* ===== ACTIVATED CARD (after coupon receive) ===== */
+function showActivatedCard(){
+  // sparkles
+  const sparkles=Array.from({length:12},(_,i)=>{
+    const x=Math.random()*100;const y=Math.random()*100;const delay=Math.random()*2;
+    return `<div class="activated__sparkle" style="left:${x}%;top:${y}%;animation-delay:${delay}s"></div>`;
+  }).join('');
+
+  // countdown: localStorageに保存して再訪問時も継続
+  let target;
+  const stored=localStorage.getItem('sururim_mens_timer_target');
+  if(stored && Number(stored)>Date.now()){
+    target=Number(stored);
+  } else {
+    target=Date.now()+24*60*60*1000;
+    localStorage.setItem('sururim_mens_timer_target',String(target));
+  }
+
+  // フル幅で直接chatに挿入（addCard経由ではない）
+  const wrap=ce('div','act-wrap');
+  wrap.innerHTML=`<div class="activated">
+    <div class="act-ribbon"><div class="act-bow"><span></span></div>SPECIAL GIFT ACTIVATED</div>
+    <div class="activated__sparkles">${sparkles}</div>
+    <div class="activated__inner">
+      <div class="activated__icon">${icon('diamond',26)}</div>
+      <div class="activated__title">あなた様専用の特典が<br/>すべて有効になりました</div>
+      <div class="activated__sub">期限内に枠の仮押さえをお済ませください</div>
+      <div class="activated__timer-label">Valid Until</div>
+      <div class="activated__timer"><span id="actTimer">23:59:59</span></div>
+    </div>
+  </div>`;
+  CH().appendChild(wrap);
+  scrollTo(wrap);
+
+  // countdown
+  const tick=()=>{
+    const rem=Math.max(0,target-Date.now());
+    const h=String(Math.floor(rem/3600000)).padStart(2,'0');
+    const m=String(Math.floor((rem%3600000)/60000)).padStart(2,'0');
+    const s=String(Math.floor((rem%60000)/1000)).padStart(2,'0');
+    const el=$('#actTimer');if(el)el.textContent=`${h}:${m}:${s}`;
+    const el2=$('#actTimer2');if(el2)el2.textContent=`${h}:${m}:${s}`;
+    if(rem>0)setTimeout(tick,250);
+  };
+  tick();
+
+  setTimeout(()=>next(true),1500);
+}
+
+/* ===== AREA ===== */
+function renderAreaOpts(){
+  const areas=Object.keys(CLINICS);
+  const w=ce('div','opts');
+  areas.forEach(a=>{const b=ce('button','opt opt--g');b.textContent=a;b.dataset.v=a;b.onclick=()=>{
+    $$('.opt',w).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');
+    setTimeout(()=>{$$('.opt',w).forEach(x=>{x.disabled=true;x.style.pointerEvents='none'});ST.a.area=a;addUsr(a);next(true)},280)
+  };w.appendChild(b)});
+  CH().appendChild(w);
+}
+
+/* ===== CLINIC SELECT ===== */
+function renderClinic(){
+  const list=CLINICS[ST.a.area]||['新宿店'];
+  const f=ce('div','field');
+  f.innerHTML=`<div class="field__l"><span>Clinic</span><span class="bdg">必須</span></div>
+    <select class="field__sel" id="cSel"><option value="">お選びください</option>${list.map(c=>`<option value="${c}">${c}</option>`).join('')}</select>
+    <p class="field__help">${icon('chk',12)} 全院カウンセリング無料 ／ 男性経験豊富な医師が丁寧にヒアリング</p>`;
+  CH().appendChild(f);
+  const nb=ce('div','nbw');nb.innerHTML=`<button class="nb" id="cNb" disabled>次へ ${icon('arr',12)}</button>`;CH().appendChild(nb);
+  $('#cSel').onchange=e=>{$('#cNb').disabled=!e.target.value};
+  $('#cNb').onclick=()=>{const v=$('#cSel').value;if(!v)return;ST.a.clinic=v;$('#cSel').disabled=true;nb.remove();addUsr(v);next(true)};
+}
+
+/* ===== CALENDAR (2 months, 3 prefs) ===== */
+function renderCal(){
+  const f=ce('div','cal');f.id='calWrap';
+  const today=new Date();
+  let viewMonth=today.getMonth();let viewYear=today.getFullYear();
+  ST.a.prefs=[];let activePref=0;
+
+  function drawCal(){
+    const d=new Date(viewYear,viewMonth,1);const dow1=d.getDay();const dim=new Date(viewYear,viewMonth+1,0).getDate();
+    const mName=`${viewYear}年 ${viewMonth+1}月`;
+    const dowH=['SUN','MON','TUE','WED','THU','FRI','SAT'].map((x,i)=>`<span${i===0?' style="color:#D88B98"':''}${i===6?' style="color:#9BB3D1"':''}>${x}</span>`).join('');
+    let cells='';
+    for(let i=0;i<dow1;i++)cells+=`<div class="cal__day empty"></div>`;
+    for(let dd=1;dd<=dim;dd++){
+      const dt=new Date(viewYear,viewMonth,dd);const dw=dt.getDay();
+      const isPast=dt<new Date(today.getFullYear(),today.getMonth(),today.getDate());
+      const isWe=dw===0||dw===6;
+      const cls=['cal__day'];
+      if(isPast)cls.push('past');
+      if(dw===0)cls.push('sun');if(dw===6)cls.push('sat');
+      const sel=ST.a.prefs.some(p=>p.date===fmtDate(dt));if(sel)cls.push('sel');
+      cells+=`<div class="${cls.join(' ')}" data-date="${fmtDate(dt)}" data-label="${viewMonth+1}/${dd}(${['日','月','火','水','木','金','土'][dw]})">${dd}${isWe&&!isPast?'<span class="pop-tag"></span>':''}</div>`;
+    }
+    f.innerHTML=`<div class="cal__head"><div class="cal__month">${mName}</div><div class="cal__nav"><button id="calP"><svg viewBox="0 0 20 20" fill="none"><path d="M13 4L7 10L13 16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button><button id="calN"><svg viewBox="0 0 20 20" fill="none"><path d="M7 4L13 10L7 16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div></div>
+      <div class="cal__dow">${dowH}</div><div class="cal__grid">${cells}</div>
+      <p class="field__help" style="margin-top:10px">${icon('star',12)} <strong style="color:var(--gold)">ゴールドマーク</strong>＝土日祝の人気枠（LINE限定で仮押さえ可能）</p>
+      <div class="pref" id="prefs"></div>`;
+    drawPrefs();
+    bindCal();
+  }
+
+  function drawPrefs(){
+    const pw=$('#prefs');if(!pw)return;
+    const times=['10:00','11:30','13:00','14:30','16:00','17:30','19:00'];
+    let html='';
+    for(let i=0;i<3;i++){
+      const p=ST.a.prefs[i];
+      const label=i===0?'第1希望':i===1?'第2希望':'第3希望';
+      html+=`<div class="pref__row">
+        <span class="pref__label">${label}</span>
+        <div class="pref__date${p?' filled':''}" id="pd${i}">${p?p.label:'タップで選択'}</div>
+        <div class="pref__time"><select id="pt${i}"${!p?' disabled':''}><option value="">時間</option>${times.map(t=>`<option value="${t}"${p&&p.time===t?' selected':''}>${t}</option>`).join('')}</select></div>
+        ${p?`<button class="pref__clear" onclick="clearPref(${i})"><svg viewBox="0 0 14 14"><path d="M10 4L4 10M4 4l6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>`:''}
+      </div>`;
+    }
+    html+=`<div class="nbw" style="margin-top:8px"><button class="nb" id="calDone" ${ST.a.prefs.length===0?'disabled':''}>次へ ${icon('arr',12)}</button></div>`;
+    pw.innerHTML=html;
+    for(let i=0;i<3;i++){
+      const sel=$(`#pt${i}`);if(sel)sel.onchange=e=>{if(ST.a.prefs[i])ST.a.prefs[i].time=e.target.value};
+    }
+    $('#calDone')?.addEventListener('click',()=>{
+      ST.a.prefs.forEach((p,i)=>{if(!p.time)p.time=$(`#pt${i}`)?.value||''});
+      const labels=ST.a.prefs.filter(p=>p.date).map((p,i)=>`第${i+1}希望: ${p.label} ${p.time||''}`).join('\n');
+      addUsr(labels);f.querySelectorAll('button,select').forEach(x=>x.disabled=true);next(true);
+    });
+  }
+
+  window.clearPref=function(i){ST.a.prefs.splice(i,1);drawCal()};
+
+  function fmtDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+
+  function bindCal(){
+    $$('.cal__day:not(.past):not(.empty)', f).forEach(d=>{
+      d.onclick=()=>{
+        if(ST.a.prefs.length>=3)return;
+        if(ST.a.prefs.some(p=>p.date===d.dataset.date))return;
+        ST.a.prefs.push({date:d.dataset.date,label:d.dataset.label,time:''});
+        drawCal();
+      }
+    });
+    const minM=today.getMonth();const minY=today.getFullYear();
+    const maxM=(today.getMonth()+1)%12;const maxY=today.getFullYear()+(today.getMonth()===11?1:0);
+    const calP=$('#calP',f);const calN=$('#calN',f);
+    if(calP)calP.onclick=()=>{if(viewYear>minY||(viewYear===minY&&viewMonth>minM)){viewMonth--;if(viewMonth<0){viewMonth=11;viewYear--}drawCal()}};
+    if(calN)calN.onclick=()=>{if(viewYear<maxY||(viewYear===maxY&&viewMonth<maxM)){viewMonth++;if(viewMonth>11){viewMonth=0;viewYear++}drawCal()}};
+  }
+
+  CH().appendChild(f);drawCal();
+}
+
+/* ===== FINAL ===== */
+async function renderFinal(){
+  const a=ST.a;
+  const prefsTxt=a.prefs.filter(p=>p.date).map((p,i)=>`第${i+1}希望: ${p.label} ${p.time||''}`).join(' / ')||'—';
+
+  const giftCard=addCard(`<div class="gift">
+    <div class="gift__head"><h3>本日のあなた様専用特典</h3><p>LINE追加でコンサルテーション結果が自動送信されます</p></div>
+    <div class="gift__list">
+      <div class="gift__item"><div class="gift__ico">${icon('diamond',16)}</div><div class="gift__info"><strong>初回プレミアム価格</strong>1部位あたり</div><div class="gift__val">9,800円</div></div>
+      <div class="gift__item"><div class="gift__ico">${icon('crown',16)}</div><div class="gift__info"><strong>2部位目以降</strong>何部位でも<small style="display:block;font-size:9px;color:var(--mt);margin-top:2px">※1部位のみのご利用でも可</small></div><div class="gift__val">14,800円</div></div>
+      <div class="gift__item"><div class="gift__ico">${icon('pill',16)}</div><div class="gift__info"><strong>人気の医療施術</strong>1つ無料プレゼント</div><div class="gift__val">0円</div></div>
+      <div class="gift__item"><div class="gift__ico">${icon('cal',16)}</div><div class="gift__info"><strong>優先仮予約</strong>${a.clinic||'—'} / ${prefsTxt}</div><div class="gift__val">確保済</div></div>
+      ${(a.body_parts||[]).map(p=>`<div class="gift__item"><div class="gift__ico">${icon('chk',16)}</div><div class="gift__info"><strong>${p}</strong>初回プレミアム価格</div><div class="gift__val">9,800円</div></div>`).join('')}
+    </div>
+  </div>`);
+  scrollTo(giftCard);
+
+  // LINEメリットカード
+  addCard(`<div class="card" style="border-color:rgba(6,199,85,.4);background:linear-gradient(135deg,rgba(6,199,85,.08),var(--bk2))">
+    <div class="card__t" style="color:var(--line)">LINEお友達追加でできること</div>
+    <div class="card__b" style="font-size:12px">
+      <p>${icon('chk',13)} <strong>ベネフィット・詳細案内はすべてLINEに自動送信</strong></p>
+      <p>${icon('chk',13)} 仮押さえ情報もLINEに届くため<strong>再入力不要</strong></p>
+      <p>${icon('chk',13)} 予約変更・施術に関するご質問も<strong>LINEから直接可能</strong></p>
+    </div>
+  </div>`);
+  await sl(400);
+  addCard(`<div class="urg">本ページからの登録は <strong style="margin-left:3px">本日あと残り<span id="regCount">${getRegRemaining()}</span>名様</strong></div>`);
+  startRegCount();
+
+  // 最下部：タイマー連動＋最後のメッセージ
+  await sl(300);
+  addCard(`<div style="text-align:center;padding:20px 16px;background:linear-gradient(135deg,#0A0D18,#141827);border:1px solid var(--gold);color:var(--ivory);max-width:94%;position:relative">
+    <div style="font-size:9px;letter-spacing:.3em;color:var(--gold);font-weight:500;margin-bottom:10px;font-family:var(--serif);text-transform:uppercase">Gift Valid Until</div>
+    <div style="font-family:var(--num);font-weight:700;font-size:26px;letter-spacing:.1em;color:var(--gold-l)"><span id="actTimer2">23:59:59</span></div>
+    <div style="margin-top:12px;font-size:11px;line-height:1.7;opacity:.75;letter-spacing:.04em">期限を過ぎますと特典は無効となります</div>
+    <div style="margin-top:16px;font-size:14px;line-height:1.7;font-weight:600;font-family:var(--serif);letter-spacing:.04em">このままLINE追加にて<br/>すべての特典を受領いただけます</div>
+    <div style="margin-top:12px;font-size:12px;opacity:.8;line-height:1.6;color:var(--ivory2)">鍛えた筋肉の輪郭を、<br/>余分な皮下脂肪から取り戻してください</div>
+  </div>`);
+  // CTAが出た後はpaddingを縮小（巨大な空白を防止）。
+  // ただし footer がCTAに埋もれないよう十分な余白を残す。
+  CH().style.paddingBottom='40px';
+  $('#fcta').classList.add('show');$('#ft').style.display='block';
+}
+
+/* ===== LINE URL ===== */
+function buildUrl(){
+  const a=ST.a;const v=CONFIG.VAR_IDS;const p=new URLSearchParams();
+  const s=(k,val)=>{if(val)p.set(`var_${k}`,Array.isArray(val)?val.join(','):val)};
+  s(v.gender,a.gender);s(v.age,a.age);s(v.body_parts,a.body_parts);s(v.diet_history,a.diet);
+  s(v.coupon,a.coupon);s(v.clinic_area,a.area);s(v.clinic,a.clinic);
+  if(a.prefs[0]){s(v.reserve_date1,a.prefs[0].date);s(v.reserve_time1,a.prefs[0].time)}
+  if(a.prefs[1]){s(v.reserve_date2,a.prefs[1].date);s(v.reserve_time2,a.prefs[1].time)}
+  if(a.prefs[2]){s(v.reserve_date3,a.prefs[2].date);s(v.reserve_time3,a.prefs[2].time)}
+  s(v.lp_source,CONFIG.LP_ID);
+  const base=CONFIG.REDIRECT_URL||`https://line.me/R/ti/p/@${CONFIG.BOT_BASIC_ID}`;
+  return `${base}?${p}`;
+}
+function openLine(){try{if(window.gtag)gtag('event','conversion',{send_to:'LINE_ADD'});if(window.fbq)fbq('track','Lead')}catch(e){}window.location.href=buildUrl()}
+window.openLine=openLine;
+
+/* ===== REG COUNT (本ページからの登録残数) ===== */
+function getRegRemaining(){
+  // 時間帯で12→2に徐々に減る。+-のランダム揺らぎをlocalStorageで保持
+  const now=new Date();
+  const todayKey='sururim_mens_reg_'+now.toDateString();
+  const stored=localStorage.getItem(todayKey);
+  if(stored){
+    const v=Number(stored);
+    if(!isNaN(v)&&v>=1&&v<=20)return v;
+  }
+  const minutesIntoDay=now.getHours()*60+now.getMinutes();
+  const base=Math.max(3,Math.floor(14-(minutesIntoDay/1440)*11));
+  localStorage.setItem(todayKey,String(base));
+  return base;
+}
+function startRegCount(){
+  setInterval(()=>{
+    const el=$('#regCount');if(!el)return;
+    const cur=parseInt(el.textContent)||12;
+    // 30%の確率で -1（時間とともに減っていく方向）、10%で+1、残り60%は据え置き
+    const r=Math.random();
+    let nxt=cur;
+    if(r<0.3)nxt=Math.max(2,cur-1);
+    else if(r<0.4)nxt=Math.min(15,cur+1);
+    if(nxt!==cur){
+      el.textContent=nxt;
+      el.style.transition='color .3s,text-shadow .3s';
+      el.style.color='#D88B98';
+      el.style.textShadow='0 0 8px rgba(216,139,152,.5)';
+      setTimeout(()=>{el.style.color='';el.style.textShadow=''},900);
+      const todayKey='sururim_mens_reg_'+new Date().toDateString();
+      localStorage.setItem(todayKey,String(nxt));
+    }
+  },12000);
+}
+
+/* ===== LIVE COUNT (本日のコンサルテーション完了数) ===== */
+function getLiveCount(){
+  const now=new Date();
+  const todayKey='sururim_mens_count_'+now.toDateString();
+  const stored=localStorage.getItem(todayKey);
+  if(stored) return Number(stored);
+  const h=now.getHours();const m=now.getMinutes();
+  const hourWeights=[3,2,1,0,0,0,3,10,20,28,35,42,52,58,62,68,75,82,90,98,105,108,95,50];
+  let base=0;for(let i=0;i<h;i++)base+=hourWeights[i]||10;
+  base+=Math.floor((hourWeights[h]||10)*m/60);
+  base+=540+Math.floor(Math.random()*160);
+  localStorage.setItem(todayKey,String(base));
+  return base;
+}
+function startLiveCount(){
+  setInterval(()=>{
+    const el=$('#liveCount');if(!el)return;
+    const cur=parseInt(el.textContent.replace(/,/g,''))||800;
+    if(Math.random()<0.55){
+      const inc=Math.floor(Math.random()*2)+1;
+      const nxt=cur+inc;
+      el.textContent=nxt.toLocaleString();
+      el.style.transition='color .2s,text-shadow .2s';
+      el.style.color='var(--gold-l)';
+      el.style.textShadow='0 0 10px rgba(228,200,137,.6)';
+      setTimeout(()=>{el.style.color='';el.style.textShadow=''},800);
+      const todayKey='sururim_mens_count_'+new Date().toDateString();
+      localStorage.setItem(todayKey,String(nxt));
+    }
+  },5000);
+}
+
+/* ===== SCRATCH CARD (男性向け専用特典ギミック) ===== */
+function showScratchCard(){
+  const ov=document.createElement('div');
+  ov.className='sc-overlay';
+  ov.innerHTML=`
+    <div class="sc-wrap">
+      <div class="sc-header__badge">For You Only</div>
+      <div class="sc-header__title">あなた様専用の特典<em>Scratch to Reveal</em></div>
+      <div class="sc-card" id="scCard">
+        <div class="sc-unlock-glow"></div>
+        <div class="sc-reveal">
+          <div class="sc-trophy">${icon('trophy',40)}</div>
+          <div class="sc-lucky">LUCKY</div>
+          <div class="sc-congrats">おめでとうございます</div>
+          <div class="sc-detail">3 Premium Benefits Unlocked</div>
+        </div>
+        <canvas id="scCanvas"></canvas>
+        <div class="sc-finger" id="scFinger">
+          <div class="sc-finger__icon">${icon('finger',48)}</div>
+          <div class="sc-finger__text">指でこすってください</div>
+        </div>
+      </div>
+      <div class="sc-progress"><div class="sc-progress__bar" id="scBar"></div></div>
+      <div class="sc-hint-text" id="scHint">金箔の下に、あなた様だけの特典を…</div>
+    </div>
+  `;
+  document.body.appendChild(ov);
+  // display:none→flex を先に切り替えてレイアウト確定させてから canvas を初期化する
+  ov.classList.add('show');
+
+  const canvas=ov.querySelector('#scCanvas');
+  const card=ov.querySelector('#scCard');
+  const finger=ov.querySelector('#scFinger');
+  const bar=ov.querySelector('#scBar');
+  const hint=ov.querySelector('#scHint');
+
+  // canvas解像度セット（親サイズ×DPR相当の2倍）
+  function setupCanvas(){
+    const rect=card.getBoundingClientRect();
+    // レイアウトが出来上がっていない場合のフォールバック
+    const w=rect.width>10?rect.width:320;
+    const h=rect.height>10?rect.height:w*0.8;
+    canvas.width=Math.max(1,Math.floor(w*2));
+    canvas.height=Math.max(1,Math.floor(h*2));
+    const ctx=canvas.getContext('2d');
+    // メタリックゴールドグラデ
+    const g1=ctx.createLinearGradient(0,0,canvas.width,canvas.height);
+    g1.addColorStop(0,'#8B7339');
+    g1.addColorStop(0.25,'#C9A96E');
+    g1.addColorStop(0.5,'#E4C889');
+    g1.addColorStop(0.75,'#C9A96E');
+    g1.addColorStop(1,'#6E5A2C');
+    ctx.fillStyle=g1;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    // 粒子テクスチャ
+    for(let i=0;i<1200;i++){
+      ctx.fillStyle=`rgba(${Math.random()<.5?'255,255,255':'0,0,0'},${Math.random()*.15})`;
+      ctx.fillRect(Math.random()*canvas.width,Math.random()*canvas.height,2,2);
+    }
+    // 斜めハイライトライン
+    ctx.globalAlpha=.25;
+    for(let i=-canvas.height;i<canvas.width;i+=40){
+      ctx.strokeStyle='rgba(255,255,255,.3)';
+      ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i+canvas.height,canvas.height);ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+    // テキスト「SCRATCH HERE」
+    ctx.font=`700 ${Math.floor(canvas.width*.08)}px "Cormorant Garamond", serif`;
+    ctx.fillStyle='rgba(11,14,26,.85)';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText('S C R A T C H',canvas.width/2,canvas.height/2-canvas.width*.06);
+    ctx.font=`600 ${Math.floor(canvas.width*.055)}px "Cormorant Garamond", serif`;
+    ctx.fillText('HERE',canvas.width/2,canvas.height/2+canvas.width*.02);
+    ctx.font=`500 ${Math.floor(canvas.width*.028)}px "Noto Serif JP", serif`;
+    ctx.fillStyle='rgba(11,14,26,.6)';
+    ctx.fillText('COAT YOUR REWARD',canvas.width/2,canvas.height/2+canvas.width*.08);
+  }
+  setupCanvas();
+
+  const ctx=canvas.getContext('2d');
+  let isDrawing=false;
+  let unlocked=false;
+  let lastProgressCheck=0;
+
+  const getPos=(e)=>{
+    const r=canvas.getBoundingClientRect();
+    const pt=(e.touches&&e.touches[0])||(e.changedTouches&&e.changedTouches[0])||e;
+    const rw=r.width>0?r.width:canvas.width/2;
+    const rh=r.height>0?r.height:canvas.height/2;
+    return {
+      x:(pt.clientX-r.left)*(canvas.width/rw),
+      y:(pt.clientY-r.top)*(canvas.height/rh)
+    };
+  };
+
+  const scratch=(x,y)=>{
+    if(unlocked)return;
+    ctx.globalCompositeOperation='destination-out';
+    ctx.beginPath();
+    const radius=Math.max(30,canvas.width*.08);
+    ctx.arc(x,y,radius,0,Math.PI*2);
+    ctx.fill();
+    // サンプリング頻度を間引く（パフォーマンス対策）
+    const now=performance.now();
+    if(now-lastProgressCheck>120){
+      lastProgressCheck=now;
+      checkProgress();
+    }
+  };
+
+  const checkProgress=()=>{
+    try{
+      // 間引きサンプリング（10x10グリッドで透明度をチェック）
+      const step=Math.floor(canvas.width/40);
+      let transparent=0;let total=0;
+      for(let y=0;y<canvas.height;y+=step){
+        for(let x=0;x<canvas.width;x+=step){
+          const d=ctx.getImageData(x,y,1,1).data;
+          if(d[3]<128)transparent++;
+          total++;
+        }
+      }
+      const pct=transparent/total;
+      bar.style.width=Math.min(100,pct*250)+'%';
+      if(pct>=0.4 && !unlocked){
+        unlocked=true;
+        hint.textContent='取得権利が確定しました';
+        hint.style.color='var(--gold-l)';
+        triggerUnlock();
+      }
+    }catch(e){console.warn('progress check error',e)}
+  };
+
+  const triggerUnlock=()=>{
+    ov.classList.add('unlocked');
+    // 残りスクラッチ層を放射状に消去
+    ctx.globalCompositeOperation='destination-out';
+    const cx=canvas.width/2;const cy=canvas.height/2;
+    const maxR=Math.hypot(canvas.width,canvas.height)/1.8;
+    let r=maxR*0.3;
+    const sweep=()=>{
+      r+=maxR*0.06;
+      ctx.beginPath();
+      ctx.arc(cx,cy,r,0,Math.PI*2);
+      ctx.fill();
+      if(r<maxR)setTimeout(sweep,16);
+      else{
+        // フル透明に
+        ctx.globalCompositeOperation='source-over';
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        // 受け取りボタン
+        setTimeout(()=>{
+          const btn=document.createElement('button');
+          btn.className='sc-claim';
+          btn.innerHTML='ベネフィットを受け取る';
+          btn.onclick=()=>{
+            ov.classList.remove('show');
+            setTimeout(()=>{
+              ov.remove();
+              showCouponPopup();
+            },400);
+          };
+          ov.querySelector('.sc-wrap').appendChild(btn);
+          setTimeout(()=>btn.classList.add('vis'),20);
+        },400);
+      }
+    };
+    sweep();
+  };
+
+  // mouse (PC: ホバーでも削れる — ドラッグ不要でテストしやすい)
+  canvas.addEventListener('mouseenter',()=>{finger.classList.add('hide')});
+  canvas.addEventListener('mousedown',(e)=>{
+    isDrawing=true;finger.classList.add('hide');
+    const p=getPos(e);scratch(p.x,p.y);
+  });
+  canvas.addEventListener('mousemove',(e)=>{
+    finger.classList.add('hide');
+    const p=getPos(e);scratch(p.x,p.y);
+  });
+  window.addEventListener('mouseup',()=>{isDrawing=false});
+
+  // touch
+  canvas.addEventListener('touchstart',(e)=>{
+    isDrawing=true;finger.classList.add('hide');
+    const p=getPos(e);scratch(p.x,p.y);
+  },{passive:true});
+  canvas.addEventListener('touchmove',(e)=>{
+    if(!isDrawing)return;
+    e.preventDefault();
+    const p=getPos(e);scratch(p.x,p.y);
+  },{passive:false});
+  canvas.addEventListener('touchend',()=>{isDrawing=false},{passive:true});
+}
+
+/* ===== KICKOFF ===== */
+document.addEventListener('DOMContentLoaded',()=>{setTimeout(render,600)});
+</script>
+</body>
+</html>
