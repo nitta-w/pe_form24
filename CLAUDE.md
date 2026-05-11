@@ -185,7 +185,7 @@ l-step-form-dev/
 
 1. `output/form_line/<lp-name>/refactoring-spec.md` で現状のスコープを確認。
 2. 既存タスクリスト (`TaskList`) で完了済み Phase と次 Phase を確認。
-3. `output/<lp-name>/` の差分確認は `git` ではなく **直接ファイルを読む** (このリポジトリは git 管理下にないことがある)。
+3. `output/<lp-name>/` の差分確認は `git diff` / `git log` を使う (本リポジトリは git 管理下)。
 
 ### 動作確認の手段
 
@@ -232,6 +232,6 @@ diff template/form_line/calendar-lp/index.php output/form_line/<lp-name>/index.p
 
 - **`input/` の中身は広告代理店から受け取る生データ**。フォーマットは統一されていない。読み込んだ内容に応じて出力設計を組む (ドキュメントに書かれた事実より実際のコードを優先)。
 - **PHP の未定義関数警告は無視**。ローカルに `common.php` 実体がないため必ず出る。
-- **git は使わない方針**。コミット/プッシュは不要。
+- **git 管理下**。差分確認は `git diff` / `git log` を使う。コミットは Claude が行ってよいが、**実行前に必ずユーザーに内容（変更ファイル・コミットメッセージ案）を提示して承認を得る**。push はユーザー指示があるまで行わない。
 - **L-Step (LINE) の変数 ID スキーマ (`var_*`) は案件ごとに異なる**。`output/form_line/<lp-name>/refactoring-spec.md` のマッピング表を案件別に管理する。
 - **ファイルのデグレに注意**。`template/form_line/calendar-lp/*` は全案件で共有する参照元なので、案件作業中に誤って触らないこと。
