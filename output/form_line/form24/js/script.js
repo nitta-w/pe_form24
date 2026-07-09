@@ -5,24 +5,30 @@ $(() => {
   const CONFIG = {
     BOT_BASIC_ID: '897vblrf',
     VAR_IDS: {
-      gender: '2184987', age: '2184988', body_parts: '2184994', diet_history: '2460256',
-      coupon: '2184995', clinic_area: '2184547', clinic: '2184548',
+      gender: '2184987', age: '2184988', body_parts: '2184994', diet_history: '2615634',
+      coupon: '2184995', clinic_area: '', clinic: '2184547',
       reserve_date1: '2184549', reserve_time1: '2184551',
-      reserve_time2: '2349621', reserve_time3: '2433745',
+      reserve_time2: '2349620', reserve_time3: '2387138',
       lp_source: '2504096',
     },
     LP_ID: 'sururim_quest_v1',
   };
-  const ST = { i: -1, a: { gender: '', age: '', body_parts: [], diet: [], area: '', clinic: '', coupon: '3大特典クーポン' } };
+  /* _isClinicListError / _isCalendarError は addParamsToCtaUrl（最終画面）で参照する。
+   * #body は毎ステップ innerHTML='' でクリアされるため、DOM属性ではなく
+   * ST.a に永続化しておく必要がある。 */
+  const ST = { i: -1, a: { gender: '', age: '', body_parts: [], diet: [], area: '', clinic: '', coupon: '3大特典クーポン', _isClinicListError: false, _isCalendarError: false } };
 
-  const CLINICS = {
-    '北海道・東北': ['札幌店（大通駅）', '旭川店（旭川駅）', '青森店（青森駅）', '秋田店（秋田駅）', '仙台店（仙台駅）', '福島店（郡山駅）'],
-    '関東': ['新宿店（新宿東口）', '渋谷店（文化村通り）', '銀座店（銀座駅）', '池袋店（サンシャイン通り）', '表参道店（表参道）', '広尾店（広尾駅）', '錦糸町店（錦糸町）', '吉祥寺店（吉祥寺）', '八王子店（八王子駅）', '町田店（町田駅）', '横浜駅前店（横浜駅）', '川崎店（川崎駅）', '藤沢店（藤沢駅）', '海老名店（海老名駅）', '大宮店（大宮駅）', '浦和店（浦和駅）', '川口店（川口駅）', '川越店（川越駅）', '千葉店（千葉駅）', '柏店（柏駅）', '松戸店（松戸駅）', '水戸店（水戸駅）', '宇都宮店（宇都宮駅）', '高崎店（高崎駅）'],
-    '中部': ['名古屋店（名古屋駅）', '栄店（栄駅）', '浜松店（新浜松駅）', '静岡店（静岡駅北口）', '新潟店（新潟駅）', '長野店（長野駅）', '金沢店（金沢駅）', '岐阜店（名鉄岐阜駅）', '四日市店（四日市駅）'],
-    '関西': ['梅田店（梅田駅）', '心斎橋店（心斎橋駅）', '京都店（京都駅）', '神戸三宮店（三宮駅）'],
-    '中国・四国': ['広島店（立町駅）', '高松店（高松駅）'],
-    '九州・沖縄': ['福岡天神店（天神南駅）', '熊本店（熊本駅）', '鹿児島店（鹿児島中央駅）'],
-  };
+  /* エリアID対応表（coding-js.md § クリニック一覧取得ルール §1 準拠）
+   * value は js/sururim_list.php（BigQuery連携）に渡す実エリアID。
+   * ラベルは入力データの表記をそのまま使用。 */
+  const AREA_OPTS = [
+    { l: '北海道・東北', v: '1' },
+    { l: '関東', v: '2' },
+    { l: '中部', v: '3' },
+    { l: '関西', v: '4' },
+    { l: '中国・四国', v: '5' },
+    { l: '九州・沖縄', v: '6' },
+  ];
 
   /* ================= UTIL =================
    * qs/qsa は独自のクエリセレクタ省略記法（jQuery の $ とは別物）。
@@ -201,11 +207,25 @@ $(() => {
   const IC_CHECK = px(['.....p', '....pp', 'p..pp.', 'pppp..', '.pp...'], { p: '#62E088' }, 3);
 
   /* ---- 5つの理由アイコン（ドット絵・rsn__icスロットは後日実画像に差し替え可） ---- */
-  const RICO_SYR = px(SYR_ROWS, SYR_PAL, 2);
-  const RICO_BURST = px(['g..p..g', '.g.p.g.', '..ppp..', 'ppp.ppp', '..ppp..', '.g.p.g.', 'g..p..g'], { g: '#FFD75E', p: '#FF4785' }, 5);
-  const RICO_CLOCK = px(['..ggg..', '.g...g.', 'g..W..g', 'g..WW.g', 'g.....g', '.g...g.', '..ggg..'], { g: '#FFD75E', W: '#FFF6EC' }, 5);
-  const RICO_SPARK = px(['g..p..g', '...p...', '.ppppp.', '...p...', 'g..p..g'], { g: '#FFD75E', p: '#FF9FBE' }, 5);
-  const RICO_CROWN = px(['p...g...p', 'g..ggg..g', 'gg.ggg.gg', 'ggggggggg', 'gpgggggpg', 'ggggggggg'], { g: '#FFD75E', p: '#FF4785' }, 4);
+  /* 01: 攻撃エフェクト用の横向き注射器(SYR_ROWS)を縮小流用すると細長すぎて
+     注射器に見えないため、正立（縦向き）の注射器を専用に描く */
+  const RICO_SYR = px([
+    '...k...',
+    '...k...',
+    '..kkk..',
+    '.kwwwk.',
+    '.kpppk.',
+    '.kpppk.',
+    '..kpk..',
+    '...k...',
+    '...k...',
+  ], { k: '#3A1F2E', w: '#FFD9E6', p: '#FF6FA5' }, 5);
+  /* 02: 変更依頼により、元の＋×十字バーストから斜め光条のみのバーストへ差し替え */
+  const RICO_BURST = px(['p.....p', '.g...g.', '..ggg..', '...p...', '..ggg..', '.g...g.', 'p.....p'], { g: '#FFD75E', p: '#FF4785' }, 5);
+  /* 03: 針の色を他アイコン共通のピンク系アクセントに統一 */
+  const RICO_CLOCK = px(['..ggg..', '.g...g.', 'g..W..g', 'g..WW.g', 'g.....g', '.g...g.', '..ggg..'], { g: '#FFD75E', W: '#FF4785' }, 5);
+  const RICO_CHECK = px(['.....g', '....gg', 'g..gg.', 'gggg..', '.gg...'], { g: '#62E088' }, 5); /* 04 ダウンタイムほぼなし＝チェックマーク（安全・問題なし） */
+  const RICO_FLAME = px(['..o..', '.ooo.', '.oGo.', 'oGGGo', 'oGYGo', '.oYo.', '..o..'], { o: '#FF8A4A', G: '#FFD75E', Y: '#FFF3D6' }, 6); /* 05 韓国で大バズ＝炎（トレンド） */
 
   /* ================= SOUND (チップチューン) ================= */
   let AC = null, sndOK = true, sndOn = true;
@@ -579,8 +599,8 @@ $(() => {
           { n: '01', t: '１回で従来の約５回分', d: 'FDA承認のデオキシコール酸を高濃度配合。少ない回数で効果を実感いただけます', ic: RICO_SYR },
           { n: '02', t: '脂肪細胞を最大３５％破壊', d: '脂肪細胞の"数"自体を減らすため、リバウンドしにくい仕組みです', ic: RICO_BURST },
           { n: '03', t: '１部位およそ１５分', d: '切開不要・麻酔不要。お仕事帰りにも通えます。当日シャワーOK', ic: RICO_CLOCK },
-          { n: '04', t: 'ダウンタイムほぼなし', d: '翌日からメイク可能。一時的な腫れや内出血は通常１〜２週間で改善します', ic: RICO_SPARK },
-          { n: '05', t: '韓国で大バズの超人気メニュー', d: '韓国で爆発的に流行した施術を、JUNOが日本人の体質に合わせて独自にパワーアップ', ic: RICO_CROWN },
+          { n: '04', t: 'ダウンタイムほぼなし', d: '翌日からメイク可能。一時的な腫れや内出血は通常１〜２週間で改善します', ic: RICO_CHECK },
+          { n: '05', t: '韓国で大バズの超人気メニュー', d: '韓国で爆発的に流行した施術を、JUNOが日本人の体質に合わせて独自にパワーアップ', ic: RICO_FLAME },
         ];
         for (let i = 0; i < data.length; i++) {
           const r = data[i];
@@ -724,25 +744,19 @@ $(() => {
       }
       case 'area': {
         await sayNoWaitLast([s.prompt], 'ギルドうけつけ');
-        const r = await menu(Object.keys(CLINICS).map((a) => ({ l: a, v: a })), { grid: true });
-        ST.a.area = r.vals[0]; r.el.remove();
-        await typeText(`&#9654; <b>${r.labels[0]}</b> のちずを ひらいた！`);
+        const r = await menu(AREA_OPTS.map((o) => ({ l: o.l, v: o.v })), { grid: true });
+        ST.a.area = r.labels[0]; ST.a.areaId = r.vals[0]; r.el.remove();
+        await typeText(`&#9654; <b>${ST.a.area}</b> のちずを ひらいた！`);
         await sl(450); run(); break;
       }
       case 'clinic': {
         await sayNoWaitLast(['この中から店舗をお選びください。'], 'ギルドうけつけ');
-        const list = CLINICS[ST.a.area] || ['新宿店'];
-        const f = ce('div', 'field pf', `
-          <div class="field__l"><span>店舗選択</span><span class="bdg">必須</span></div>
-          <select class="field__sel" id="cSel"><option value="">えらんでください</option>${list.map((c) => `<option value="${c}">${c}</option>`).join('')}</select>
-          <p class="field__help">全院カウンセリング無料 ／ 医師が丁寧にヒアリングいたします</p>
-          <button class="cmd__go cmd__go--wide" id="cNb" disabled>&#9654; これでけってい</button>`);
-        BODY().appendChild(f); f.scrollIntoView({ block: 'nearest' });
-        await new Promise((r) => {
-          qs('#cSel').onchange = (e) => { qs('#cNb').disabled = !e.target.value; };
-          qs('#cNb').onclick = () => { const v = qs('#cSel').value; if (!v) return; ST.a.clinic = v; SFX.sel(); f.remove(); r(); };
-        });
-        await typeText(`&#9654; <b>${ST.a.clinic}</b> をえらんだ！`);
+        await renderClinicStep();
+        if (ST.a.clinic) {
+          await typeText(`&#9654; <b>${ST.a.clinic}</b> をえらんだ！`);
+        } else {
+          await typeText('&#9654; 店舗は追ってLINEでご相談することにした！');
+        }
         await sl(450); run(); break;
       }
       case 'cal': {
@@ -828,10 +842,85 @@ $(() => {
     }; t();
   }
 
+  /* ================= クリニック一覧取得（js/sururim_list.php 連携） =================
+   * coding-js.md § クリニック一覧取得ルール 準拠。エンドポイントのみ
+   * houreisen_list.php から js/sururim_list.php（BigQuery連携・LP同梱）に置き換え。
+   * レスポンス形式 { clinic_id, value, label } は同ルールの仕様と一致。 */
+  function renderClinicStep() {
+    return new Promise((resolve) => {
+      const f = ce('div', 'field pf', `
+        <div class="field__l"><span>店舗選択</span><span class="bdg">必須</span></div>
+        <select class="field__sel" id="cSel" disabled><option value="">取得中…</option></select>
+        <p class="field__help" id="cHelp">全院カウンセリング無料 ／ 医師が丁寧にヒアリングいたします</p>
+        <button class="cmd__go cmd__go--wide" id="cNb" disabled>&#9654; これでけってい</button>`);
+      BODY().appendChild(f); f.scrollIntoView({ block: 'nearest' });
+
+      const $clinicSelect = qs('#cSel', f);
+      const $nextBtn = qs('#cNb', f);
+      const $help = qs('#cHelp', f);
+
+      /* エラー時のフォールバックUI（coding-js.md § クリニック一覧取得ルール §5-3）:
+       * ・select は disabled のまま（データ不明のため選択させない）
+       * ・進行ボタン（次へ）は必ず活性化し、店舗未選択でも先に進める
+       * ・data-clinic-list-error は addParamsToCtaUrl のエラー判定に使用
+       * この関数だけで完結させ、失敗系のどの分岐でも必ず呼ばれるようにする。 */
+      const showClinicListError = () => {
+        $clinicSelect.innerHTML = '';
+        $clinicSelect.appendChild(new Option('店舗一覧を取得できませんでした', ''));
+        $clinicSelect.disabled = true;
+        $clinicSelect.setAttribute('data-clinic-list-error', '');
+        ST.a._isClinicListError = true;
+        if ($help) {
+          /* 固定の案内文（ユーザー入力を含まない）のため innerHTML で強調表示してよい */
+          $help.innerHTML = '店舗一覧を取得できませんでした。<b>下の「次へ」ボタン</b>から店舗未定のまま進めます。追ってLINEのトーク画面で最寄り店舗をご相談いただけます。';
+        }
+        $nextBtn.disabled = false;
+        $nextBtn.innerHTML = '&#9654; 店舗は未定のまま次へ';
+      };
+
+      fetch('js/sururim_list.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ area_id: ST.a.areaId }),
+      })
+        .then((response) => {
+          if (!response.ok) throw new Error(`HTTP error status: ${response.status}`);
+          return response.json();
+        })
+        .then((data) => {
+          if (!Array.isArray(data)) throw new Error('unexpected response shape');
+          $clinicSelect.innerHTML = '';
+          $clinicSelect.appendChild(new Option('選択してください', ''));
+          data.forEach((item) => {
+            const opt = new Option(item.label, item.value);
+            opt.dataset.clinicId = item.clinic_id;
+            $clinicSelect.appendChild(opt);
+          });
+          $clinicSelect.removeAttribute('data-clinic-list-error');
+          $clinicSelect.disabled = false;
+        })
+        .catch((e) => {
+          console.error(e);
+          showClinicListError();
+        });
+
+      $clinicSelect.addEventListener('change', () => {
+        $nextBtn.disabled = !$clinicSelect.value;
+      });
+      $nextBtn.addEventListener('click', () => {
+        const selected = $clinicSelect.selectedOptions[0];
+        ST.a.clinic = $clinicSelect.value || '';
+        ST.a.clinicId = selected ? Number(selected.dataset.clinicId) || null : null;
+        SFX.sel();
+        f.remove();
+        resolve();
+      });
+    });
+  }
+
   /* ================= カレンダー（time-calendar-sync 統合） =================
    * calendar-spec.md 準拠。日付は単一選択＋第1〜第3希望時間（同一日）。
-   * clinicId は入力データに ID が無いため、エリア内リストの並び順から暫定生成する
-   * （refactoring-spec.md §13 オープン項目3）。 */
+   * clinicId は renderClinicStep() で取得した実IDを使用する。 */
   function renderCalendarStep() {
     return new Promise((resolve) => {
       const wrap = ce('div', '', `
@@ -846,14 +935,13 @@ $(() => {
       const $parentEl = qs('#js-time-calendar-1');
       const $doneBtn = qs('#calDoneBtn', wrap);
 
-      const clinicId = (CLINICS[ST.a.area] || []).indexOf(ST.a.clinic) + 1 || 1;
       const cal = embedTimeCalendar({
         parentSelector: '#js-time-calendar-1',
         checkBoxAttrName: 'date_1',
-        scheduleFetchUrl: new URL('/js/schedule.php', window.location.origin),
+        scheduleFetchUrl: 'js/sururim_schedule.php',
         options: {
           maxSelectedDate: 3,
-          useScheduleDummyData: true,
+          useScheduleDummyData: false,
           couponSettings: {
             isAllTimeCoupon: true,
             showStartDays: 0,
@@ -866,6 +954,7 @@ $(() => {
 
       const updateDoneState = () => {
         const hasError = $parentEl.hasAttribute('data-tc-is-error');
+        if (hasError) ST.a._isCalendarError = true;
         const dateChecked = qs('[name="date_1"]:checked', $parentEl);
         const time1 = qs('[name="date_1_time_1"]', $parentEl);
         const ready = hasError || (dateChecked && time1 && time1.value !== '');
@@ -873,7 +962,7 @@ $(() => {
       };
       $parentEl.addEventListener('change', updateDoneState);
 
-      cal.createCalendar({ params: { clinicId, days: 21 } }).then(updateDoneState);
+      cal.createCalendar({ params: { clinicId: ST.a.clinicId, days: 21 } }).then(updateDoneState);
 
       $doneBtn.addEventListener('click', () => {
         SFX.sel();
@@ -994,9 +1083,13 @@ $(() => {
     const requestTime2 = $('[name="date_1_time_2"]').val() ?? '';
     const requestTime3 = $('[name="date_1_time_3"]').val() ?? '';
 
-    const isCalendarError = $('[data-tc-is-error]').length > 0;
+    /* #body は毎ステップ innerHTML='' でクリアされ、エラー属性を持つ要素も
+     * 一緒に消えるため、DOM 属性ではなく ST.a に永続化した値を参照する。 */
+    const isClinicListError = ST.a._isClinicListError;
+    const isCalendarError = ST.a._isCalendarError;
     const errorCodes = [];
     isCalendarError && errorCodes.push('E01_カレンダー表示');
+    isClinicListError && errorCodes.push('E02_店舗表示');
 
     const botBasicId = $('[name="bot_basic_id"]').val().trim();
     const varMapping = {};
@@ -1009,9 +1102,12 @@ $(() => {
         varMapping[CONFIG.VAR_IDS.diet_history] = (ST.a.diet || []).join(',');
         varMapping[CONFIG.VAR_IDS.coupon] = ST.a.coupon;
         varMapping[CONFIG.VAR_IDS.clinic_area] = ST.a.area;
-        varMapping[CONFIG.VAR_IDS.clinic] = requestClinic;
 
-        if (!isCalendarError) {
+        if (!isClinicListError) {
+          varMapping[CONFIG.VAR_IDS.clinic] = requestClinic;
+        }
+
+        if (!isClinicListError && !isCalendarError) {
           varMapping[CONFIG.VAR_IDS.reserve_date1] = requestFormattedDate;
           varMapping[CONFIG.VAR_IDS.reserve_time1] = requestTime1;
           varMapping[CONFIG.VAR_IDS.reserve_time2] = requestTime2;
@@ -1066,6 +1162,7 @@ $(() => {
       ['ss', pad(d.getSeconds())],
       ['dow', ['日', '月', '火', '水', '木', '金', '土'][d.getDay()]],
 
+      // 先に処理されると「YYYY」と重複して置換されるため、必ず後に処理する
       ['M', d.getMonth() + 1],
       ['D', d.getDate()],
       ['h', d.getHours()],

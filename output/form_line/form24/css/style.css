@@ -1704,6 +1704,11 @@ button {
   line-height: 1.6;
 }
 
+.field__help b {
+  color: var(--pkl);
+  font-weight: 400;
+}
+
 /* カレンダーモジュール（time-calendar-sync）テーマ上書き
    本体クラスは js/time-calendar-sync/style.css が先に定義するため、
    同一クラスへの上書きは本ファイル（後読み込み）が有効になる。

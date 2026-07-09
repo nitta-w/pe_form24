@@ -123,10 +123,11 @@ output/
   - **インラインハンドラ撤廃**: `onclick="openLine()"` を削除し、CTA は `.js-cta-link` の `click` イベントで `onClickCtaBtn` 相当の処理（`addParamsToCtaUrl()` 実行）にバインド。
 - **カレンダー統合**（`cal` ステップ、`input:1519-1523,1601-1680` を置換）:
   1. `#body` に `#js-time-calendar-1 > .js-tc / .js-tc-list` を動的挿入。
-  2. `embedTimeCalendar({ parentSelector:'#js-time-calendar-1', checkBoxAttrName:'date_1', scheduleFetchUrl: new URL('/js/schedule.php', location.origin), options:{ maxSelectedDate:3, useScheduleDummyData:true, couponSettings:{ isAllTimeCoupon:true, showStartDays:0, showDays:7, showTimeList:[] } } })` → `cal.init()`。
-  3. クリニック確定後（`clinic` ステップ完了時）に `cal.createCalendar({ params:{ clinicId, days:21 } })` を呼ぶ。**`clinicId` は入力にクリニック ID が存在しないため、ダミー値（`1`固定 or クリニック名のインデックス+1）を暫定採用**（§10 オープン項目）。
+  2. `embedTimeCalendar({ parentSelector:'#js-time-calendar-1', checkBoxAttrName:'date_1', scheduleFetchUrl:'js/sururim_schedule.php', options:{ maxSelectedDate:3, useScheduleDummyData:false, couponSettings:{ isAllTimeCoupon:true, showStartDays:0, showDays:7, showTimeList:[] } } })` → `cal.init()`。
+  3. クリニック確定後（`clinic` ステップ完了時）に `cal.createCalendar({ params:{ clinicId: ST.a.clinicId, days:21 } })` を呼ぶ。`clinicId` は `renderClinicStep()` で `js/sururim_list.php` から取得した実 ID（レスポンスの `clinic_id`）を使用（旧ダミー値方式は廃止）。
   4. 「これで決定」ボタン（`.js-tc-list` 直下に案件固有で設置）を `[name="date_1"]` の `change` で活性化制御し、クリックで `runStep` を前進させる（`.claude/rules/calendar-spec.md` の実装例パターンに準拠）。
-- **クリニック**: 入力の `CLINICS`（6エリア・`input:652-659`）を案件固有データとして維持。
+- **クリニック一覧取得（`js/sururim_list.php` 連携）**: 入力の `CLINICS` ハードコードは廃止。`area` ステップでは coding-js.md § クリニック一覧取得ルールのエリアID対応表（1〜6）に準拠した `AREA_OPTS`（ラベルは入力表記を維持、値は数値エリアID）を使用し、`ST.a.area`（表示用ラベル）と `ST.a.areaId`（数値ID・fetch用）を分離保持。`clinic` ステップ（`renderClinicStep()`）でエリアID確定後に `POST js/sururim_list.php { area_id }` を実行し、レスポンス `{ clinic_id, value, label }` から `<select>` を動的構築。取得失敗時は `data-clinic-list-error` 属性＋`ST.a._isClinicListError=true` を設定し、`<select>` は disabled のまま進行ボタンを活性化する（coding-js.md §5-3 準拠）。
+- **エラー状態の永続化**: `runStep()` は毎ステップ `#body` を `innerHTML=''` でクリアするため、`data-tc-is-error` / `data-clinic-list-error` の DOM 属性は次ステップ遷移時に消失する。そのため `ST.a._isCalendarError` / `ST.a._isClinicListError` に検知時点で永続化し、`addParamsToCtaUrl()`（最終画面）はこの2フラグを参照する（DOM 属性は直接参照しない）。
 - **セキュリティ/品質**: `eval`/`Function`/`document.write` 不使用を維持。ユーザー入力の DOM 反映は既存通り `zk()`（全角変換）経由でも動的値のみ・`escapeHTML` は不要（外部入力を受け取らないため）。`setInterval`（BGM `input:1042-1055`、ライブカウント `input:1794-1804`、タイマー `input:1587-1599`）を `pagehide`/`visibilitychange` で `clearInterval` するよう追加。
 
 ## 8. input → output 分離対象表
@@ -160,8 +161,8 @@ output/
 | 気になる部位 | body_parts | 複数（`,`結合） | 2184994 |
 | ダイエット歴 | diet | 複数 | 2460256 |
 | クーポン | coupon（固定`3大特典クーポン`） | 単一 | 2184995 |
-| エリア | area | 単一 | 2184547 |
-| クリニック | clinic | 単一 | 2184548 |
+| エリア | area（表示ラベル。数値ID は `areaId` として別保持） | 単一 | 2184547 |
+| クリニック | clinic（`isClinicListError` 時は送信しない） | 単一 | 2184548 |
 | 来院希望日 | 選択日（`date_1` の `.val()`、`formatDate(…,'MM月DD日(dow)')`） | 単一 | 2184549 |
 | 第1希望時間 | `date_1_time_1` | 単一 | 2184551 |
 | 第2希望時間 | `date_1_time_2` | 単一 | 2349621 |
@@ -170,7 +171,7 @@ output/
 | （未使用）reserve_date3 | — | — | 2433744 — **同上** |
 | LP識別 | 固定`sururim_quest_v1` | 単一 | 2504096 |
 
-エラーコード: `isCalendarError`（`$('[data-tc-is-error]').length > 0`）→ `E01_カレンダー表示`。本案件はクリニック一覧を静的データで持つため `isClinicListError`/`E02_店舗表示` は非該当（発生しない）。
+エラーコード: `isCalendarError`（カレンダーfetch失敗時に `ST.a._isCalendarError` へ永続化）→ `E01_カレンダー表示`。`isClinicListError`（`js/sururim_list.php` fetch失敗時に `ST.a._isClinicListError` へ永続化）→ `E02_店舗表示`。
 
 ## 11. 実装ステップ順序
 
@@ -193,7 +194,8 @@ output/
 ## 13. オープン項目（ユーザー確認待ち）
 
 1. **カレンダー日時モデルの変更（§5-1）**: 入力は「3つの異なる日付それぞれに時間」だったが、テンプレモジュールの実装は「1つの日付＋時間帯3希望」。**この UX 変更で問題ないか確認をお願いします**。
-2. **schedule.php（空き状況データ）**: 本番用エンドポイントは未提供。ローカルは `useScheduleDummyData:true` で進める。本番投入前にデータ供給元の確認が必要。
-3. **clinicId の採番**: 入力はクリニック名の文字列のみ保持し ID が存在しない。ダミー値で `createCalendar` に渡す暫定対応で進めるが、本番連携時は ID 付与ルールの確認が必要。
+2. ~~schedule.php（空き状況データ）~~ **解決済み**: ユーザーより `js/sururim_schedule.php`（BigQuery連携・`clinic-calendar-464805` プロジェクト実装）の提供を受け、`js/form24/js/sururim_schedule.php` に配置・連携済み。`useScheduleDummyData: false` に変更。ただし `google-bigquery-api/vendor/autoload.php` と認証情報 JSON（`google-bigquery-api-...json`）はサイトルート（`output/` の2階層上、`common.php` 等と同階層）に存在する前提。**ローカル環境にはこの実体が無いため、`google-bigquery-api` 未配置時は fetch が失敗し、カレンダーはエラー表示＋進行許可のフォールバック状態になる（想定挙動）**。ローカルで正常系（ダミーデータ）を見たい場合は `php -S 127.0.0.1:<port>` など、hostname を `127.0.0.1` に固定したローカルサーバーで確認すること（`time-calendar-sync/main.js` がこの hostname 時のみ自動でダミーデータへフォールバックする）。
+3. ~~clinicId の採番~~ **解決済み**: クリニック一覧も `js/sururim_list.php`（同 BigQuery プロジェクト、`area_id` → `{clinic_id, value, label}`）に置き換え、レスポンスの実 `clinic_id` を使用するよう変更。入力の `CLINICS` ハードコードは削除。エリアは coding-js.md のエリアID対応表（1〜6）に準拠する数値IDで送信し、表示ラベルは入力表記（「関西」等）を維持。
 4. **フォーム入力の `<input>` 化（§9 の表）**: `.claude/rules/coding-form-input.md` の原則（選択値は必ず `<input>` で保持）と、本ゲームの JS 状態管理（`ST.a` 直接格納）の間に構造的な相違がある。全選択を `<input type="radio/checkbox">` 化するとゲームの動的 DOM 生成と大きく衝突するため、**現状の JS 状態管理維持で進めてよいか確認をお願いします**（LINE 送信は `var_*` パラメータ経由であり `<input>` の有無は送信結果に影響しないため実害は無いと判断）。
+5. **本番デプロイ前提の確認**: `js/sururim_schedule.php` / `js/sururim_list.php` は `__DIR__ . '/../../../google-bigquery-api/...'`（サイトルート想定）を参照する。本番サーバーに `google-bigquery-api/`（vendor一式＋認証JSON）が配置されていることの確認をお願いします。
 5. **実素材差し替え**: ドット絵 SVG プレースホルダ（症例写真・脂肪細胞イメージ等）は本 Phase では差し替えない。
