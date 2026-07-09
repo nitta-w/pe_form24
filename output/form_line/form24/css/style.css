@@ -395,12 +395,17 @@ body {
   -webkit-font-smoothing: none;
 }
 
-.app img,
-.app svg {
+/* ここは意図的に .app 修飾なしのタグセレクタのまま維持する。
+   .app button のように詳細度を上げると .cmd__go 等の単一クラス指定
+   （詳細度がタグセレクタより低い）を後読み込みでも上書きしてしまい、
+   ボタンのピンク背景が effectively 打ち消されるため（input の設計は
+   button{background:none} という最弱の詳細度でリセットしていた）。 */
+img,
+svg {
   display: block;
 }
 
-.app button {
+button {
   background: none;
   color: inherit;
   cursor: pointer;
@@ -1701,21 +1706,29 @@ body {
 
 /* カレンダーモジュール（time-calendar-sync）テーマ上書き
    本体クラスは js/time-calendar-sync/style.css が先に定義するため、
-   同一クラスへの上書きは本ファイル（後読み込み）が有効になる */
+   同一クラスへの上書きは本ファイル（後読み込み）が有効になる。
+   角丸は input のオリジナル意匠（角丸なし）に統一し、
+   .cal は他パネルと同じ .pf 相当のピクセルウィンドウ枠にする。 */
+.app button,
+.app select {
+  border-radius: 0;
+}
+
 .cal {
   background: var(--winbg);
+  border: 3px solid var(--dark);
+  box-shadow: 0 0 0 3px var(--winbd), 0 0 0 6px var(--dark);
+  border-radius: 2px;
 }
 
-.cal__day {
+.cal__day,
+.pref__date {
   background: var(--dark);
+  border-radius: 0;
 }
 
-.pref__date,
 .pref__time select {
   background: var(--dark);
-}
-
-.pref__time select {
   font-size: 1.6rem;
 }
 

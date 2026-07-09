@@ -834,7 +834,7 @@ $(() => {
    * （refactoring-spec.md §13 オープン項目3）。 */
   function renderCalendarStep() {
     return new Promise((resolve) => {
-      const wrap = ce('div', 'pf', `
+      const wrap = ce('div', '', `
         <div id="js-time-calendar-1">
           <div class="js-tc"></div>
           <div class="js-tc-list"></div>
