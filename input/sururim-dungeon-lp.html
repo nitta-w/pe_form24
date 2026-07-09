@@ -1,0 +1,1858 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#160E1E"/>
+<title>脂肪破壊クエスト｜宝箱の中に特別チケット</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'DotGothic16','Hiragino Sans',sans-serif;line-height:1.7;color:#FFF6EC;
+  background:#0B0712;overflow:hidden;-webkit-font-smoothing:none;
+}
+button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit}
+img,svg{display:block}
+input,select{font-family:inherit;font-size:inherit}
+
+:root{
+  --bg:#160E1E;--wall:#2E1B38;--wall2:#3B2549;--wallL:#4B2F5C;
+  --pk:#FF4785;--pkl:#FF9FBE;--pkd:#B34A6E;--pkD:#6E2B44;
+  --gold:#FFD75E;--goldd:#C99B2E;--cream:#FFF6EC;--ink2:#C9A8BC;
+  --winbg:#221331;--winbd:#FFD9E6;--dark:#120A1A;
+  --line:#06C755;
+}
+
+/* ========== APP FRAME ========== */
+.app{
+  max-width:480px;margin:0 auto;height:100dvh;position:relative;
+  background:var(--bg);display:flex;flex-direction:column;overflow:hidden;
+}
+/* CRT scanline + vignette atmosphere */
+.app::after{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:90;
+  background:
+    repeating-linear-gradient(0deg,rgba(0,0,0,.09) 0 1px,transparent 1px 3px),
+    radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(8,4,14,.55));
+}
+
+/* pixel frame utility (DQ-style window) */
+.pf{
+  background:var(--winbg);border:3px solid var(--dark);
+  box-shadow:0 0 0 3px var(--winbd),0 0 0 6px var(--dark);
+  border-radius:2px;
+}
+.pf--gold{box-shadow:0 0 0 3px var(--gold),0 0 0 6px var(--dark)}
+.pf--pink{box-shadow:0 0 0 3px var(--pk),0 0 0 6px var(--dark)}
+
+/* ========== HUD ========== */
+.hud{
+  position:relative;z-index:20;display:flex;align-items:center;gap:8px;
+  padding:12px 12px 8px;background:linear-gradient(180deg,#1B1026,#160E1E);
+  border-bottom:3px solid var(--dark);box-shadow:0 3px 0 rgba(255,159,190,.12);
+}
+.hud__floor{
+  font-family:'Press Start 2P',monospace;font-size:11px;color:var(--gold);
+  background:var(--dark);padding:7px 9px 6px;border:2px solid var(--goldd);flex-shrink:0;
+  text-shadow:0 2px 0 #4a3208;
+}
+.hud__map{flex:1;display:flex;align-items:center;gap:3px;min-width:0}
+.hud__cell{flex:1;height:10px;background:#241631;border:2px solid #3B2549;position:relative}
+.hud__cell.done{background:var(--pk);border-color:var(--pkd)}
+.hud__cell.cur{background:var(--pkl);border-color:var(--pk);animation:blink .8s steps(2) infinite}
+.hud__cell--chest{flex:0 0 20px;height:16px;border:none;background:none;display:grid;place-items:center}
+.hud__cell--goal{flex:0 0 14px;height:18px;border:none;background:none;display:grid;place-items:center}
+@keyframes blink{50%{opacity:.25}}
+.hud__snd{width:32px;height:30px;flex-shrink:0;display:grid;place-items:center;background:var(--dark);border:2px solid var(--wall2)}
+.hud__timer{
+  display:none;position:absolute;top:calc(100% + 6px);right:10px;z-index:30;
+  font-family:'Press Start 2P',monospace;font-size:9px;color:var(--gold);
+  background:rgba(18,10,26,.92);border:2px solid var(--goldd);padding:5px 8px 4px;
+  letter-spacing:.06em;
+}
+.hud__timer.show{display:block}
+.hud__timer small{display:block;font-family:'DotGothic16';font-size:8px;color:var(--pkl);margin-bottom:2px;letter-spacing:0}
+
+/* ========== STAGE (scene + window) ========== */
+.stage{flex:1;display:flex;flex-direction:column;min-height:0;position:relative}
+.stage.warp{animation:warp .65s steps(7) forwards}
+@keyframes warp{60%{transform:scale(1.5);opacity:.6}100%{transform:scale(2.6);opacity:0}}
+.stage.enter{animation:enter .45s steps(6)}
+@keyframes enter{from{transform:scale(.86);opacity:0}}
+
+/* ---------- SCENE ---------- */
+.scene{
+  position:relative;height:216px;flex-shrink:0;overflow:hidden;
+  background:
+    linear-gradient(180deg,rgba(255,71,133,.06),transparent 55%),
+    repeating-linear-gradient(0deg,var(--wall) 0 22px,var(--wall2) 22px 24px),
+    var(--wall);
+}
+/* brick offsets */
+.scene::before{
+  content:'';position:absolute;inset:0;
+  background:
+    repeating-linear-gradient(90deg,transparent 0 44px,rgba(18,10,26,.5) 44px 47px),
+    repeating-linear-gradient(90deg,transparent 0 22px,transparent 22px 91px);
+  background-size:88px 48px;opacity:.55;
+}
+/* floor */
+.scene__floor{
+  position:absolute;left:0;right:0;bottom:0;height:52px;
+  background:repeating-linear-gradient(90deg,#241631 0 30px,#2B1B3A 30px 60px);
+  border-top:4px solid var(--dark);
+  box-shadow:inset 0 6px 0 rgba(255,159,190,.07);
+}
+.scene__glow{
+  position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);
+  width:260px;height:200px;pointer-events:none;
+  background:radial-gradient(ellipse,rgba(255,159,190,.14),transparent 65%);
+}
+/* torch */
+.torch{position:absolute;top:44px;width:24px}
+.torch--l{left:26px}.torch--r{right:26px}
+.torch__flame{
+  width:16px;height:20px;margin:0 auto;position:relative;
+  background:var(--gold);
+  clip-path:polygon(50% 0,75% 30%,100% 60%,85% 100%,15% 100%,0 60%,25% 30%);
+  animation:flick .5s steps(2) infinite;
+}
+.torch--r .torch__flame{animation-delay:.25s}
+.torch__flame::after{
+  content:'';position:absolute;left:4px;top:7px;width:8px;height:11px;background:#FF8A4A;
+  clip-path:polygon(50% 0,100% 55%,80% 100%,20% 100%,0 55%);
+}
+@keyframes flick{50%{transform:scaleY(.85) translateY(2px)}}
+.torch__stick{width:8px;height:18px;background:#5A3A28;margin:0 auto;border:2px solid var(--dark)}
+.torch__light{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:90px;height:90px;background:radial-gradient(circle,rgba(255,215,94,.16),transparent 68%);pointer-events:none}
+
+/* scene center object */
+.scn-obj{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);text-align:center}
+.scn-obj--pair{display:flex;gap:34px;transform:translateX(-50%)}
+
+/* door — 枠SVG(16x20)と開口部(12.5%/10%)の比率を一致させ、パネルの縦伸びを防ぐ */
+.doorbox{position:relative;width:112px;height:140px}
+.doorbox__hole{
+  position:absolute;left:12.5%;right:12.5%;top:10%;bottom:0;overflow:hidden;
+  background:linear-gradient(180deg,#0D0714,#1A0F24);
+}
+.doorbox__light{
+  position:absolute;inset:0;opacity:0;transition:opacity .5s steps(5);
+  background:radial-gradient(ellipse at 50% 60%,rgba(255,215,94,.95),rgba(255,159,190,.55) 55%,transparent 80%);
+}
+.doorbox.open .doorbox__light{opacity:1}
+.doorbox__pnl{position:absolute;top:0;height:100%;width:50%;transition:transform .55s steps(6)}
+.doorbox__pnl--l{left:0}.doorbox__pnl--r{right:0}
+.doorbox.open .doorbox__pnl--l{transform:translateX(-102%)}
+.doorbox.open .doorbox__pnl--r{transform:translateX(102%)}
+.doorbox__frame{position:absolute;inset:0;pointer-events:none}
+.doorbox__frame svg,.doorbox__pnl svg{width:100%;height:100%}
+.door-label{
+  margin-top:8px;font-size:13px;color:var(--cream);letter-spacing:.08em;
+  background:var(--dark);border:2px solid var(--pkd);padding:3px 10px;display:inline-block;
+}
+.doorbox.pick{cursor:pointer}
+.doorbox.pick:active{transform:scale(.97)}
+.doorbox.pick::after{
+  content:'';position:absolute;left:50%;top:-22px;transform:translateX(-50%);
+  border:8px solid transparent;border-top:11px solid var(--gold);
+  animation:hop .7s steps(2) infinite;
+}
+@keyframes hop{50%{transform:translateX(-50%) translateY(4px)}}
+
+/* sprite (MIRAI) */
+.mirai{position:absolute;left:18px;bottom:26px;animation:idle 1s steps(2) infinite}
+@keyframes idle{50%{transform:translateY(-3px)}}
+.scn-caption{
+  position:absolute;top:10px;left:50%;transform:translateX(-50%);white-space:nowrap;
+  font-size:10px;letter-spacing:.24em;padding-left:.24em;color:var(--ink2);
+}
+
+/* big object (chest/crystal/etc) — SVGは等倍表示（非整数スケールによるドット崩れ防止） */
+.bigobj svg{margin:0 auto}
+.bigobj--tap{cursor:pointer;animation:idle 1s steps(2) infinite}
+.bigobj--tap:active{transform:scale(.96)}
+.obj-hint{
+  margin-top:6px;display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--gold);
+  animation:blink 1s steps(2) infinite;
+}
+/* chest light burst */
+.burst{
+  position:absolute;left:50%;bottom:70px;transform:translateX(-50%);
+  width:10px;height:10px;pointer-events:none;opacity:0;
+}
+.burst.on{opacity:1}
+.burst span{
+  position:absolute;left:50%;top:50%;width:5px;height:64px;background:linear-gradient(180deg,var(--gold),transparent);
+  transform-origin:50% 0;animation:ray 1.1s steps(6) infinite;
+}
+@keyframes ray{50%{height:88px;opacity:.5}}
+
+/* ---------- MESSAGE WINDOW ---------- */
+.win{
+  flex:1;min-height:0;display:flex;flex-direction:column;
+  padding:14px 12px calc(14px + env(safe-area-inset-bottom));gap:10px;position:relative;z-index:10;
+}
+.msgwin{
+  flex-shrink:0;padding:13px 14px 12px;min-height:86px;cursor:pointer;position:relative;
+}
+.msgwin__name{
+  position:absolute;top:-14px;left:10px;font-size:11px;letter-spacing:.14em;
+  background:var(--pk);color:#fff;padding:2px 10px;border:2px solid var(--dark);
+}
+.msgwin__t{font-size:14px;line-height:1.85;color:var(--cream);word-break:break-word}
+.msgwin__t b,.msgwin__t strong{color:var(--pkl);font-weight:400}
+.msgwin__t em{font-style:normal;color:var(--gold)}
+.msgwin__t small{font-size:11px;color:var(--ink2)}
+/* タップ誘導（横向き指差し＋ラベル） */
+.tapguide{position:absolute;right:10px;bottom:-14px;z-index:5;display:none;align-items:center;gap:6px;pointer-events:none}
+.msgwin.ready .tapguide{display:flex}
+.tapguide__t{
+  font-size:11px;color:var(--dark);background:var(--gold);padding:3px 8px;border:2px solid var(--dark);
+  animation:blink 1.2s steps(2) infinite;white-space:nowrap;
+}
+.tapguide__hand{position:relative;display:block;animation:tapnudge .7s steps(3) infinite}
+@keyframes tapnudge{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
+
+/* body (menus / cards) — scrolls */
+.body{flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;gap:10px;padding-bottom:6px}
+.body::-webkit-scrollbar{display:none}
+
+/* command menu */
+.cmd{padding:10px 8px}
+.cmd__i{
+  display:flex;align-items:center;gap:9px;width:100%;text-align:left;
+  padding:10px 10px;font-size:14px;color:var(--cream);letter-spacing:.04em;
+  border:2px solid transparent;
+}
+.cmd__i:active{background:rgba(255,71,133,.15)}
+.cmd__i .cur{width:0;height:0;border:6px solid transparent;border-left:9px solid var(--gold);flex-shrink:0;opacity:0}
+.cmd__i.on .cur,.cmd__i:hover .cur{opacity:1}
+.cmd__i.on{color:var(--gold)}
+.cmd__i .cb{
+  width:16px;height:16px;flex-shrink:0;border:2px solid var(--pkl);background:var(--dark);
+  display:grid;place-items:center;
+}
+.cmd__i .cb svg{width:11px;height:11px;opacity:0}
+.cmd__i.on .cb svg{opacity:1}
+.cmd--grid{display:grid;grid-template-columns:1fr 1fr;gap:0 6px}
+.cmd__go{
+  margin:4px 10px 8px;padding:12px 12px 12px calc(12px + .16em);text-align:center;font-size:14px;letter-spacing:.16em;
+  background:var(--pk);color:#fff;border:3px solid var(--dark);
+  box-shadow:0 4px 0 var(--pkD);
+}
+.cmd__go:active{transform:translateY(3px);box-shadow:0 1px 0 var(--pkD)}
+.cmd__go:disabled{opacity:.35;pointer-events:none}
+.sysline{font-size:12px;color:var(--gold);letter-spacing:.06em;padding:0 4px}
+
+/* generic pixel card */
+.card{padding:14px}
+.card__t{font-size:13px;color:var(--gold);letter-spacing:.1em;margin-bottom:8px;display:flex;gap:7px;align-items:center}
+.card__t::before{content:'';width:8px;height:8px;background:var(--gold);flex-shrink:0}
+.card__b{font-size:13px;line-height:1.9;color:var(--cream)}
+.card__b p+p{margin-top:6px}
+.card__b b{color:var(--pkl);font-weight:400}
+.card__b em{font-style:normal;color:var(--gold)}
+
+/* edu vs grid */
+.edu{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.edu__c{border:2px solid var(--pkd);padding:12px 8px;text-align:center;font-size:11px;line-height:1.6;background:var(--dark)}
+.edu__c strong{display:block;font-family:'Press Start 2P',monospace;font-size:15px;margin-bottom:5px;font-weight:400}
+.edu__c--d{color:#FF9090}.edu__c--d strong{color:#FF6A6A}
+.edu__c--s{color:#9FE8B8}.edu__c--s strong{color:#62E088}
+
+/* reason tablets */
+.rsn{padding:12px 14px;opacity:0;transform:translateY(12px)}
+.rsn.vis{animation:pop .4s steps(5) forwards}
+@keyframes pop{to{opacity:1;transform:none}}
+.rsn__n{font-family:'Press Start 2P',monospace;font-size:9px;color:var(--pk);margin-bottom:5px}
+.rsn__t{font-size:14px;color:var(--gold);margin-bottom:4px}
+.rsn__d{font-size:11px;color:var(--ink2);line-height:1.7}
+
+/* BA mirror */
+.ba{padding:12px}
+.ba__frame{display:flex;border:3px solid var(--goldd);background:var(--dark)}
+.ba__h{flex:1;aspect-ratio:1/1.15;display:grid;place-items:center;font-size:11px;text-align:center;line-height:1.6;position:relative}
+.ba__h--b{background:#2B1B3A;color:#8A7290}
+.ba__h--a{background:#3A1F33;color:var(--pkl);border-left:3px solid var(--goldd)}
+.ba__lb{position:absolute;top:6px;left:6px;font-family:'Press Start 2P',monospace;font-size:7px;background:var(--dark);padding:4px 6px 3px;color:#B09AA0}
+.ba__h--a .ba__lb{left:auto;right:6px;color:var(--pk)}
+.ba__cap{font-size:11px;line-height:1.7;color:var(--cream);padding:9px 4px 2px}
+.ba__cap b{color:var(--pkl);font-weight:400}
+.ba__nav{display:flex;justify-content:center;align-items:center;gap:14px;padding-top:8px}
+.ba__ar{width:34px;height:30px;background:var(--dark);border:2px solid var(--pkd);display:grid;place-items:center;color:var(--pkl)}
+.ba__ar svg{width:12px;height:12px}
+.ba__ds{display:flex;gap:5px}
+.ba__d{width:8px;height:8px;background:#3B2549}
+.ba__d.on{background:var(--pk)}
+
+/* social */
+.soc{padding:11px 13px;font-size:11px;line-height:1.8;color:var(--cream)}
+.soc b{color:var(--gold);font-weight:400}
+.soc__n{font-family:'Press Start 2P',monospace;font-size:10px;color:var(--gold)}
+
+/* ---------- GIFT OVERLAY ---------- */
+.ov{
+  position:fixed;inset:0;z-index:150;display:none;align-items:center;justify-content:center;
+  background:rgba(8,4,14,.82);padding:18px;
+}
+.ov.show{display:flex}
+.ov__wrap{width:100%;max-width:370px;max-height:92vh;overflow-y:auto;scrollbar-width:none}
+.ov__wrap::-webkit-scrollbar{display:none}
+.ov__head{text-align:center;margin-bottom:14px}
+.ov__badge{
+  display:inline-block;font-family:'Press Start 2P',monospace;font-size:8px;color:var(--dark);
+  background:var(--gold);padding:6px 10px 5px calc(10px + .1em);border:2px solid var(--dark);margin-bottom:10px;letter-spacing:.1em;
+}
+.ov__title{font-size:19px;color:#fff;line-height:1.5;text-shadow:0 3px 0 rgba(0,0,0,.5)}
+.ov__sub{font-size:11px;color:var(--pkl);margin-top:4px}
+.gcard{
+  padding:16px 14px;text-align:center;margin-bottom:16px;
+  opacity:0;transform:translateY(16px) scale(.92);
+}
+.gcard.vis{animation:gpop .45s steps(6) forwards}
+@keyframes gpop{to{opacity:1;transform:none}}
+.gcard__get{font-size:11px;color:var(--gold);letter-spacing:.12em;padding-left:.12em;margin-bottom:7px}
+.gcard__badge{
+  display:inline-block;font-size:11px;color:var(--dark);background:#FFB56A;
+  border:2px solid var(--dark);padding:3px 9px;margin-bottom:7px;
+}
+.gcard__old{font-size:11px;color:var(--ink2);margin-bottom:4px}
+.gcard__old s{color:#B08A96}
+.gcard__num{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--pk);margin-bottom:6px}
+.gcard__t{font-size:15px;color:var(--cream);margin-bottom:6px;line-height:1.5}
+.gcard__price{font-family:'Press Start 2P',monospace;font-size:26px;color:var(--gold);text-shadow:0 3px 0 #4a3208}
+.gcard__price .yen{font-family:'DotGothic16';font-size:16px}
+.gcard__note{font-size:10px;color:var(--ink2);margin-top:6px}
+.gcard__d{font-size:11px;color:var(--cream);margin-top:7px;line-height:1.7}
+.ov__btn{
+  display:block;width:100%;padding:15px 15px 15px calc(15px + .14em);text-align:center;font-size:15px;letter-spacing:.14em;
+  background:var(--pk);color:#fff;border:3px solid var(--dark);box-shadow:0 5px 0 var(--pkD),0 0 0 3px var(--winbd),0 0 0 6px var(--dark);
+}
+.ov__btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--pkD),0 0 0 3px var(--winbd),0 0 0 6px var(--dark)}
+
+/* activated */
+.act{padding:18px 14px;text-align:center}
+.act__t{font-size:15px;color:var(--gold);line-height:1.6;margin-bottom:4px}
+.act__s{font-size:11px;color:var(--ink2);margin-bottom:12px}
+.act__lb{font-size:10px;color:var(--pkl);letter-spacing:.2em;padding-left:.2em;margin-bottom:5px}
+.act__timer{
+  display:inline-block;font-family:'Press Start 2P',monospace;font-size:22px;color:var(--gold);
+  background:var(--dark);border:2px solid var(--goldd);padding:11px 16px 9px;letter-spacing:.05em;
+  text-shadow:0 3px 0 #4a3208;
+}
+
+/* ---------- FIELDS / CALENDAR ---------- */
+.field{padding:13px}
+.field__l{font-size:12px;color:var(--gold);margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.field__l .bdg{background:var(--pk);color:#fff;font-size:9px;padding:2px 7px;border:2px solid var(--dark)}
+.field__sel{
+  width:100%;padding:12px;border:2px solid var(--pkd);background:var(--dark);color:var(--cream);
+  font-size:16px;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4h8L6 9z' fill='%23FF9FBE'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:38px;
+}
+.field__sel:focus{outline:none;border-color:var(--pk)}
+.field__help{font-size:10px;color:var(--ink2);margin-top:7px;line-height:1.6}
+
+.cal{padding:13px}
+.cal__head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cal__month{font-size:14px;color:var(--gold);letter-spacing:.08em}
+.cal__nav{display:flex;gap:6px}
+.cal__nav button{width:30px;height:28px;background:var(--dark);border:2px solid var(--pkd);display:grid;place-items:center;color:var(--pkl)}
+.cal__nav svg{width:11px;height:11px}
+.cal__dow{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;text-align:center;font-size:10px;color:var(--ink2)}
+.cal__dow span:first-child{color:#FF8080}
+.cal__dow span:last-child{color:#80B0FF}
+.cal__grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal__day{
+  aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:13px;cursor:pointer;position:relative;background:#2B1B3A;border:2px solid transparent;
+}
+.cal__day:hover{border-color:var(--pkl)}
+.cal__day.empty{visibility:hidden}
+.cal__day.past{opacity:.28;cursor:default;pointer-events:none}
+.cal__day.past::after{content:'満';position:absolute;bottom:0;font-size:7px;color:#FF8080}
+.cal__day.sun{color:#FF8080}.cal__day.sat{color:#80B0FF}
+.cal__day.sel{background:var(--pk);color:#fff;border-color:var(--pkl)}
+.cal__day.sel.sun,.cal__day.sel.sat{color:#fff}
+.cal__day .pop-tag{position:absolute;top:1px;right:1px;width:6px;height:6px;background:var(--gold)}
+.pref{margin-top:12px}
+.pref__row{display:flex;align-items:center;gap:7px;margin-bottom:8px;font-size:12px}
+.pref__label{min-width:52px;color:var(--gold);flex-shrink:0;font-size:11px}
+.pref__date{flex:1;padding:9px 6px;border:2px solid var(--wall2);background:var(--dark);font-size:12px;text-align:center;color:var(--ink2);min-height:36px;display:flex;align-items:center;justify-content:center}
+.pref__date.filled{border-color:var(--pk);color:var(--pkl)}
+.pref__time{width:82px}
+.pref__time select{width:100%;padding:8px 4px;border:2px solid var(--wall2);background:var(--dark);font-size:12px;text-align:center;appearance:none;color:var(--cream)}
+.pref__time select:focus{outline:none;border-color:var(--pk)}
+.pref__clear{width:26px;height:26px;background:var(--wall2);display:grid;place-items:center;flex-shrink:0;color:var(--ink2)}
+.pref__clear svg{width:10px;height:10px}
+
+/* ---------- FINAL / INVENTORY ---------- */
+.inv{overflow:hidden}
+.inv__head{background:var(--pk);padding:11px;text-align:center;border-bottom:3px solid var(--dark)}
+.inv__head h3{font-size:14px;color:#fff;letter-spacing:.1em;font-weight:400}
+.inv__head p{font-size:10px;color:#FFD9E6;margin-top:2px}
+.inv__list{padding:6px 12px}
+.inv__i{display:flex;align-items:center;gap:9px;padding:10px 0;border-bottom:2px dashed #3B2549;font-size:12px}
+.inv__i:last-child{border-bottom:none}
+.inv__i .ic{width:28px;height:26px;flex-shrink:0;display:grid;place-items:center}
+.inv__info{flex:1;line-height:1.5;color:var(--cream)}
+.inv__info b{display:block;color:var(--pkl);font-weight:400;font-size:13px}
+.inv__info small{font-size:9px;color:var(--ink2)}
+.inv__val{font-family:'Press Start 2P',monospace;font-size:10px;color:var(--gold);flex-shrink:0}
+.urg{
+  display:inline-flex;align-items:center;gap:7px;font-size:11px;color:#FFB56A;
+  border:2px solid #7A4A22;background:var(--dark);padding:7px 12px;
+}
+.urg::before{content:'';width:7px;height:7px;background:#FFB56A;animation:blink 1.2s steps(2) infinite}
+.deadline{padding:16px 12px;text-align:center}
+.deadline__lb{font-size:10px;color:var(--gold);letter-spacing:.2em;padding-left:.2em;margin-bottom:6px}
+.deadline__tm{font-family:'Press Start 2P',monospace;font-size:20px;color:var(--gold);text-shadow:0 3px 0 #4a3208}
+.deadline__tx{font-size:12px;line-height:1.8;margin-top:10px;color:var(--cream)}
+.deadline__tx b{color:var(--pkl);font-weight:400}
+
+/* fixed LINE CTA */
+.fcta{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;max-width:480px;margin:0 auto;
+  pointer-events:none;opacity:0;transition:opacity .3s;
+}
+.fcta.show{opacity:1;pointer-events:auto}
+.fcta__inner{background:rgba(18,10,26,.97);padding:10px 14px calc(12px + env(safe-area-inset-bottom));border-top:3px solid var(--pkd)}
+.fcta__micro{text-align:center;font-size:10px;color:var(--ink2);margin-bottom:7px}
+.fcta__micro b{color:var(--pkl);font-weight:400}
+.fcta__btn{
+  width:100%;padding:15px;background:var(--line);color:#fff;font-size:15px;letter-spacing:.06em;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  border:3px solid var(--dark);box-shadow:0 5px 0 #04813A;animation:cta 1.6s steps(2) infinite;
+}
+@keyframes cta{50%{box-shadow:0 5px 0 #04813A,0 0 0 5px rgba(6,199,85,.22)}}
+.fcta__btn:active{transform:translateY(4px);box-shadow:0 1px 0 #04813A}
+.fcta__btn svg{width:22px;height:22px;flex-shrink:0}
+.fcta__sub{text-align:center;font-size:9px;color:var(--ink2);margin-top:6px}
+.footer{padding:14px 4px 2px;font-size:9px;color:#8A7290;text-align:center;line-height:1.8}
+.footer a{color:inherit;text-decoration:underline;margin:0 4px}
+
+/* ---------- TITLE SCREEN ---------- */
+.title{
+  position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:0;background:
+    radial-gradient(ellipse at 50% 30%,rgba(255,71,133,.14),transparent 60%),var(--bg);
+  transition:opacity .5s steps(6);
+}
+.title.hide{opacity:0;pointer-events:none}
+.title__stars{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.title__stars i{position:absolute;width:4px;height:4px;background:var(--pkl);animation:blink 1.4s steps(2) infinite}
+.title__chest{margin-bottom:18px;animation:idle 1s steps(2) infinite}
+.title__sup{font-size:12px;color:var(--pkl);letter-spacing:.4em;padding-left:.4em;margin-bottom:10px}
+.title__logo{
+  font-size:34px;color:#fff;text-align:center;line-height:1.3;letter-spacing:.1em;
+  text-shadow:0 4px 0 var(--pkD),0 0 22px rgba(255,71,133,.55);
+}
+.title__logo span{color:var(--pkl)}
+.title__sub{font-size:12px;color:var(--ink2);margin-top:14px;text-align:center;line-height:1.9}
+.title__sub em{font-style:normal;color:var(--gold)}
+.title__start{
+  margin-top:30px;font-family:'Press Start 2P',monospace;font-size:12px;color:var(--gold);
+  padding:16px 22px 14px calc(22px + .1em);letter-spacing:.1em;background:var(--dark);
+  border:3px solid var(--goldd);animation:blink 1.1s steps(2) infinite;
+}
+.title__start:active{transform:scale(.96)}
+.title__foot{position:absolute;bottom:calc(18px + env(safe-area-inset-bottom));font-size:9px;color:#6E5A7A;letter-spacing:.14em;padding-left:.14em}
+
+/* ---------- BOSS BATTLE ---------- */
+.hpwrap{margin-bottom:8px}
+.hp-label{font-size:10px;color:var(--cream);margin-bottom:4px;text-align:center;text-shadow:0 2px 0 var(--dark)}
+.hpbar{width:160px;height:12px;background:var(--dark);border:2px solid var(--goldd);margin:0 auto}
+.hpbar__fill{height:100%;width:100%;background:linear-gradient(90deg,#FFD75E,#FF8A4A);transition:width .2s steps(3)}
+.slime{cursor:pointer;animation:jig .6s steps(2) infinite}
+@keyframes jig{50%{transform:scaleY(.93) translateY(3px)}}
+.slime.hit{animation:hitfl .18s steps(2)}
+@keyframes hitfl{50%{opacity:.25;transform:translateX(4px)}}
+.slime.dead{animation:die .5s steps(6) forwards;pointer-events:none}
+@keyframes die{to{transform:scale(0) rotate(90deg);opacity:0}}
+.dmg{
+  position:absolute;z-index:30;pointer-events:none;
+  font-family:'Press Start 2P',monospace;font-size:14px;color:var(--gold);
+  text-shadow:2px 2px 0 #4a3208;animation:dmgpop .55s steps(6) forwards;
+}
+@keyframes dmgpop{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-36px)}}
+.app.shake{animation:shk .25s steps(4)}
+@keyframes shk{25%{transform:translate(-4px,2px)}50%{transform:translate(3px,-2px)}75%{transform:translate(-2px,1px)}}
+/* 注射器攻撃エフェクト */
+.syr{position:absolute;z-index:25;pointer-events:none;animation:stab .3s steps(3) forwards}
+@keyframes stab{from{transform:translate(34px,-26px) rotate(18deg);opacity:1}55%{transform:translate(0,0) rotate(18deg)}to{transform:translate(3px,3px) rotate(18deg);opacity:0}}
+/* 勝利演出（光柱＋星）— 宝箱の紙吹雪とは別物 */
+.vpillar{
+  position:absolute;left:50%;bottom:40px;transform:translateX(-50%);
+  width:110px;height:180px;z-index:5;pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(255,215,94,.38) 60%,rgba(255,215,94,.6));
+  animation:pillar 1.3s steps(6) forwards;
+}
+@keyframes pillar{from{opacity:0;transform:translateX(-50%) scaleY(.2)}30%{opacity:1;transform:translateX(-50%) scaleY(1)}to{opacity:0;transform:translateX(-50%) scaleY(1)}}
+.vstar{
+  position:absolute;width:9px;height:9px;background:var(--gold);z-index:26;pointer-events:none;
+  clip-path:polygon(50% 0,65% 35%,100% 50%,65% 65%,50% 100%,35% 65%,0 50%,35% 35%);
+  animation:starup 1.2s steps(6) forwards;
+}
+@keyframes starup{from{opacity:0;transform:translateY(6px) scale(.4)}25%{opacity:1}to{opacity:0;transform:translateY(-72px) scale(1.25)}}
+.winbanner{
+  position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);z-index:35;
+  font-size:16px;color:var(--dark);background:var(--gold);white-space:nowrap;
+  border:3px solid var(--dark);box-shadow:0 0 0 3px var(--gold),0 5px 0 3px #4a3208;
+  padding:9px 16px;animation:bpop .45s steps(5);
+}
+@keyframes bpop{from{transform:translate(-50%,-50%) scale(.2);opacity:0}60%{transform:translate(-50%,-50%) scale(1.15)}to{transform:translate(-50%,-50%) scale(1)}}
+
+/* flash & confetti */
+.flash{position:fixed;inset:0;z-index:140;background:#FFF6EC;opacity:0;pointer-events:none}
+.flash.on{animation:fl .5s steps(4)}
+@keyframes fl{15%{opacity:.95}100%{opacity:0}}
+#confetti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:160}
+
+/* ---------- TITLE BATTLE（タイトルのVS対決構図） ---------- */
+.title__battle{display:flex;align-items:center;gap:24px;margin-bottom:18px}
+.title__battle .vs{
+  font-family:'Press Start 2P',monospace;font-size:13px;color:var(--gold);
+  text-shadow:0 3px 0 #4a3208;animation:blink 1.1s steps(2) infinite;flex-shrink:0;
+}
+.title__hero{position:relative;animation:idle 1s steps(2) infinite}
+.title__hero .t-syr{position:absolute;right:-30px;top:20px;transform:rotate(-22deg)}
+.title__foe{position:relative;animation:jig .6s steps(2) infinite}
+.title__foe .t-emote{
+  position:absolute;top:-18px;right:2px;font-family:'Press Start 2P',monospace;
+  font-size:11px;color:#FF6A6A;animation:blink .9s steps(2) infinite;
+}
+
+/* ---------- イメージ画像プレースホルダー（実素材差し替え用） ---------- */
+.imgph{
+  width:100%;aspect-ratio:16/9;margin:8px 0;display:grid;place-items:center;
+  background:var(--dark);border:2px dashed var(--pkd);text-align:center;
+  font-size:11px;color:var(--pkl);line-height:1.7;
+}
+.imgph small{font-size:9px;color:var(--ink2)}
+.imgph img,.imgph video{width:100%;height:100%;object-fit:cover}
+
+/* ---------- 5つの理由アイコン ---------- */
+.rsn__row{display:flex;gap:10px;align-items:flex-start}
+.rsn__ic{
+  flex-shrink:0;width:46px;height:46px;display:grid;place-items:center;
+  background:var(--dark);border:2px solid var(--pkd);margin-top:2px;
+}
+
+/* ---------- FLOOR TIER（階層で壁の色が深まる） ---------- */
+.app[data-tier="1"]{--wall:#26243E;--wall2:#343154;--wallL:#464270}
+.app[data-tier="2"]{--wall:#33203C;--wall2:#452C52;--wallL:#5A3A6A}
+.app[data-tier="3"]{--wall:#3A1832;--wall2:#4E2244;--wallL:#683058}
+
+/* ---------- COMBO表示（ボス戦） ---------- */
+.combo{
+  position:absolute;left:50%;top:30px;transform:translateX(-50%);z-index:28;pointer-events:none;
+  font-family:'Press Start 2P',monospace;font-size:13px;color:var(--gold);
+  text-shadow:2px 2px 0 #4a3208;white-space:nowrap;animation:combop .35s steps(4);
+}
+.combo.mx{color:#FF9FBE;font-size:15px}
+@keyframes combop{from{transform:translateX(-50%) scale(1.7);opacity:.4}to{transform:translateX(-50%) scale(1)}}
+
+/* ---------- たからのカギ ドロップ ---------- */
+.keydrop{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);z-index:27;pointer-events:none;animation:keyfall .9s steps(8) forwards}
+@keyframes keyfall{from{opacity:0;transform:translateX(-50%) translateY(-46px) rotate(-24deg)}45%{opacity:1;transform:translateX(-50%) translateY(18px) rotate(8deg)}65%{transform:translateX(-50%) translateY(6px) rotate(0)}to{opacity:1;transform:translateX(-50%) translateY(14px) rotate(0)}}
+
+/* ---------- 電子カルテ（脂肪タイプ診断書） ---------- */
+.karte{padding:0;overflow:hidden}
+.karte__head{background:var(--gold);padding:9px 12px;border-bottom:3px solid var(--dark);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.karte__head h3{font-size:13px;color:var(--dark);letter-spacing:.08em;font-weight:400}
+.karte__head span{font-family:'Press Start 2P',monospace;font-size:7px;color:#7A5A1E;flex-shrink:0}
+.karte__type{text-align:center;padding:14px 12px 8px}
+.karte__lb{font-size:10px;color:var(--ink2);letter-spacing:.22em;padding-left:.22em;margin-bottom:6px}
+.karte__name{font-size:22px;color:var(--gold);text-shadow:0 3px 0 #4a3208;line-height:1.4}
+.karte__desc{font-size:12px;color:var(--cream);line-height:1.8;padding:6px 14px 0;text-align:left}
+.karte__desc b{color:var(--pkl);font-weight:400}
+.karte__desc em{font-style:normal;color:var(--gold)}
+.karte__rows{margin:10px 12px 10px;border:2px solid var(--wall2);background:var(--dark)}
+.karte__r{display:flex;font-size:11px;border-bottom:2px solid var(--wall2)}
+.karte__r:last-child{border-bottom:none}
+.karte__k{width:88px;flex-shrink:0;padding:7px 8px;color:var(--gold);background:rgba(255,215,94,.06)}
+.karte__v{flex:1;padding:7px 8px;color:var(--cream);line-height:1.6}
+.karte__note{font-size:10px;color:var(--pkl);text-align:center;padding:0 12px 12px}
+
+.hidden{display:none!important}
+@media(max-height:640px){.scene{height:178px}.doorbox{width:96px;height:120px}}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- TITLE -->
+  <div class="title" id="title">
+    <div class="title__stars" id="tStars"></div>
+    <div class="title__battle" id="tBattle"></div>
+    <div class="title__sup">JUNO CLINIC PRESENTS</div>
+    <div class="title__logo">脂肪破壊<br/><span>クエスト</span></div>
+    <div class="title__sub">落ちない脂肪の正体を探す ３分間の冒険<br/>最深部の <em>たからばこ</em> には特別チケット</div>
+    <button class="title__start" id="tStart">&#9654; START</button>
+    <div class="title__foot">TAP TO START YOUR QUEST</div>
+  </div>
+
+  <!-- HUD -->
+  <div class="hud">
+    <div class="hud__floor" id="hFloor">B1F</div>
+    <div class="hud__map" id="hMap"></div>
+    <button class="hud__snd" id="hSnd" aria-label="サウンド切替"></button>
+    <div class="hud__timer" id="hTimer"><small>チケット有効期限</small><span id="hTimerV">23:59:59</span></div>
+  </div>
+
+  <!-- STAGE -->
+  <div class="stage" id="stage">
+    <div class="scene" id="scene"></div>
+    <div class="win">
+      <div class="msgwin pf" id="msgwin">
+        <div class="msgwin__name" id="msgName">MIRAI</div>
+        <div class="msgwin__t" id="msgT"></div>
+        <div class="tapguide"><span class="tapguide__hand" id="tapHand"></span><span class="tapguide__t">タップですすむ</span></div>
+      </div>
+      <div class="body" id="body"></div>
+    </div>
+  </div>
+
+  <!-- GIFT OVERLAY -->
+  <div class="ov" id="ov"><div class="ov__wrap" id="ovWrap"></div></div>
+  <div class="flash" id="flash"></div>
+  <canvas id="confetti"></canvas>
+
+  <!-- LINE CTA -->
+  <div class="fcta" id="fcta"><div class="fcta__inner">
+    <p class="fcta__micro">クエストの記録（電子カルテ）を <b>LINEにセーブ</b></p>
+    <button class="fcta__btn" onclick="openLine()">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M19.365 10.41C19.365 7.103 16.043 4.42 11.96 4.42c-4.083 0-7.404 2.683-7.404 5.99 0 2.963 2.632 5.444 6.183 5.915.241.052.569.159.651.364.074.186.048.478.024.667l-.105.631c-.033.186-.148.73.638.398.786-.332 4.243-2.498 5.79-4.277h-.001c1.068-1.17 1.629-2.358 1.629-3.698z" fill="currentColor"/><path d="M9.053 8.86h-.52c-.08 0-.144.064-.144.143v3.228c0 .079.065.143.144.143h.52c.08 0 .144-.064.144-.143V9.003c0-.079-.064-.143-.144-.143zM12.629 8.86h-.52a.143.143 0 00-.143.143v1.917L10.49 8.923a.137.137 0 00-.012-.014l-.009-.008a.114.114 0 00-.012-.01l-.007-.004a.111.111 0 00-.014-.008l-.006-.003a.111.111 0 00-.014-.006l-.007-.002-.015-.004h-.008l-.015-.002H9.85a.143.143 0 00-.143.143v3.228c0 .079.064.143.143.143h.52a.143.143 0 00.143-.143v-1.916l1.479 1.999a.147.147 0 00.037.036l.008.005a.12.12 0 00.014.007l.007.003a.11.11 0 00.011.004l.011.003.007.002a.151.151 0 00.037.005h.52a.143.143 0 00.143-.143V9.003a.143.143 0 00-.143-.143zM7.795 11.57H6.383V9.003a.143.143 0 00-.143-.143h-.52a.143.143 0 00-.143.143v3.228c0 .038.015.073.04.098l.002.002.001.002c.025.025.06.04.099.04h2.076c.08 0 .143-.064.143-.144v-.52a.143.143 0 00-.143-.143zM16.253 9.666a.143.143 0 00.143-.143v-.52a.143.143 0 00-.143-.143h-2.076a.143.143 0 00-.099.04l-.002.002-.001.002a.14.14 0 00-.04.098v3.228a.14.14 0 00.04.098l.002.002.001.002c.025.025.06.04.099.04h2.076c.08 0 .143-.064.143-.144v-.52a.143.143 0 00-.143-.143H14.84v-.546h1.412a.143.143 0 00.143-.143v-.52a.143.143 0 00-.143-.144H14.84v-.546h1.412z" fill="#fff"/></svg>
+      LINE追加で特典を受け取る
+    </button>
+    <p class="fcta__sub">すべてのクーポンがあなたのLINEに届きます</p>
+  </div></div>
+
+</div>
+
+<script>
+'use strict';
+
+/* ================= CONFIG (Lステップ連携 — チャット版と共通) ================= */
+const CONFIG={
+  BOT_BASIC_ID:'897vblrf',
+  REDIRECT_URL:'',
+  VAR_IDS:{gender:'2184987',age:'2184988',body_parts:'2184994',diet_history:'2460256',coupon:'2184995',clinic_area:'2184547',clinic:'2184548',reserve_date1:'2184549',reserve_time1:'2184551',reserve_date2:'2349620',reserve_time2:'2349621',reserve_date3:'2433744',reserve_time3:'2433745',lp_source:'2504096'},
+  LP_ID:'sururim_quest_v1'
+};
+const ST={i:-1,a:{gender:'',age:'',body_parts:[],diet:[],area:'',clinic:'',prefs:[],coupon:'3大特典クーポン'}};
+
+const CLINICS={
+  '北海道・東北':['札幌店（大通駅）','旭川店（旭川駅）','青森店（青森駅）','秋田店（秋田駅）','仙台店（仙台駅）','福島店（郡山駅）'],
+  '関東':['新宿店（新宿東口）','渋谷店（文化村通り）','銀座店（銀座駅）','池袋店（サンシャイン通り）','表参道店（表参道）','広尾店（広尾駅）','錦糸町店（錦糸町）','吉祥寺店（吉祥寺）','八王子店（八王子駅）','町田店（町田駅）','横浜駅前店（横浜駅）','川崎店（川崎駅）','藤沢店（藤沢駅）','海老名店（海老名駅）','大宮店（大宮駅）','浦和店（浦和駅）','川口店（川口駅）','川越店（川越駅）','千葉店（千葉駅）','柏店（柏駅）','松戸店（松戸駅）','水戸店（水戸駅）','宇都宮店（宇都宮駅）','高崎店（高崎駅）'],
+  '中部':['名古屋店（名古屋駅）','栄店（栄駅）','浜松店（新浜松駅）','静岡店（静岡駅北口）','新潟店（新潟駅）','長野店（長野駅）','金沢店（金沢駅）','岐阜店（名鉄岐阜駅）','四日市店（四日市駅）'],
+  '関西':['梅田店（梅田駅）','心斎橋店（心斎橋駅）','京都店（京都駅）','神戸三宮店（三宮駅）'],
+  '中国・四国':['広島店（立町駅）','高松店（高松駅）'],
+  '九州・沖縄':['福岡天神店（天神南駅）','熊本店（熊本駅）','鹿児島店（鹿児島中央駅）'],
+};
+
+/* ================= UTIL ================= */
+const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const sl=ms=>new Promise(r=>setTimeout(r,ms));
+function ce(t,c,h){const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e}
+const BODY=()=>$('#body');
+
+/* 半角数字→全角変換（DotGothic16の半角数字は視認性が低いため）。HTMLタグ内は変換しない */
+function zk(s){
+  return String(s).replace(/&#9654;/g,'▶').split(/(<[^>]+>)/).map(part=>
+    part.startsWith('<')?part:part.replace(/[0-9%]/g,c=>c==='%'?'％':String.fromCharCode(c.charCodeAt(0)+0xFEE0))
+  ).join('');
+}
+
+/* localStorageが使えない環境（プレビューやプライベートモード等）でも止まらない安全ラッパー */
+const store={
+  get(k){try{return localStorage.getItem(k)}catch(e){console.warn('storage unavailable:',e.message);return null}},
+  set(k,v){try{localStorage.setItem(k,v)}catch(e){console.warn('storage unavailable:',e.message)}}
+};
+window.addEventListener('unhandledrejection',e=>console.error('unhandled rejection:',e.reason));
+
+/* ================= PIXEL ART RENDERER =================
+   rows: 文字列配列（1文字=1ピクセル）/ pal: 文字→色 / cell: px */
+function px(rows,pal,cell=5,cls=''){
+  const w=rows[0].length*cell,h=rows.length*cell;let r='';
+  rows.forEach((row,y)=>{[...row].forEach((ch,x)=>{
+    const c=pal[ch];if(c)r+=`<rect x="${x*cell}" y="${y*cell}" width="${cell}" height="${cell}" fill="${c}"/>`;
+  })});
+  return `<svg class="${cls}" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">${r}</svg>`;
+}
+
+/* ---- MIRAI（案内フェアリー） ---- */
+const MIRAI_ROWS=[
+'....oooooo....',
+'...ohhGGhho...',
+'..ohhhhhhhho..',
+'..ohhhhhhhho..',
+'..ohffffffho..',
+'..ohfeffefho..',
+'..ohfbffbfho..',
+'...ohffffho...',
+'....offffo....',
+'...owwwwwwo...',
+'..owwwppwwwo..',
+'.oswwwwwwwwso.',
+'.owwwwwwwwwwo.',
+'.owwwwwwwwwwo.',
+'owwwwwwwwwwwwo',
+'....od..do....',
+];
+const MIRAI_PAL={o:'#5A2B40',h:'#FF9FBE',G:'#FFD75E',f:'#FFEBDD',e:'#3A1F2E',b:'#FFB5C8',w:'#FFF6EC',p:'#FF4785',s:'#FFEBDD',d:'#B34A6E'};
+const MIRAI_SVG=px(MIRAI_ROWS,MIRAI_PAL,5);
+
+/* ---- タップ誘導の指マーク（横向き指差し・FF14風） ---- */
+const HAND_ROWS=[
+'....oooo......',
+'...oWWWWo.....',
+'..oWWWWWWoooo.',
+'..oWWWWWWWWWWo',
+'..oWWWWWWWWWWo',
+'..oWWWWWWoooo.',
+'..oWWWWWWo....',
+'...oWWWWo.....',
+'....oooo......',
+];
+const HAND_PAL={o:'#3A1F2E',W:'#FFF6EC'};
+const HAND_SVG=px(HAND_ROWS,HAND_PAL,3);
+const HAND_S=px(HAND_ROWS,HAND_PAL,2);
+
+/* ---- 脂肪スライム（ボス戦） ---- */
+const SLIME_ROWS=[
+'.....oooo.....',
+'...ooYYYYoo...',
+'..oYYLYYYYYo..',
+'.oYYLYYYYYYYo.',
+'.oYeYYYYYeYYo.',
+'oYYYYYYYYYYYYo',
+'oYYYmmmmmmYYYo',
+'oYYYYYYYYYYYYo',
+'.oYYYYYYYYYYo.',
+'..oooooooooo..',
+];
+const SLIME_PAL={o:'#8A6A2E',Y:'#FFE3A8',L:'#FFF3D6',e:'#4A2333',m:'#C97B4A'};
+const BOSS_NAMES={'アゴ下':'あごした','二の腕':'にのうで','上腹部':'うわばら','下腹部':'したばら','側腹部':'わきばら','太もも外側':'そとふともも','太もも内側':'うちふともも','背中':'せなか'};
+
+/* ---- スルリム注射器（攻撃エフェクト） ---- */
+const SYR_ROWS=[
+'.........ooooooo..o.',
+'.........oppWppo..o.',
+'nnnnnnnnnoppWppooooo',
+'.........oppWppo..o.',
+'.........ooooooo..o.',
+];
+const SYR_PAL={n:'#D9DCE8',o:'#3A1F2E',p:'#FF6FA5',W:'#FFD9E6'};
+const SYR_SVG=px(SYR_ROWS,SYR_PAL,3);
+
+/* 勝利演出: 光の柱＋舞い上がる星（宝箱の紙吹雪とは別演出） */
+function victoryFX(){
+  const sc=$('#scene');
+  const pillar=ce('div','vpillar');sc.appendChild(pillar);setTimeout(()=>pillar.remove(),1400);
+  for(let i=0;i<12;i++){
+    const s=ce('div','vstar');
+    s.style.left=(36+Math.random()*30)+'%';
+    s.style.bottom=(40+Math.random()*50)+'px';
+    s.style.animationDelay=(Math.random()*.5)+'s';
+    if(i%3===0)s.style.background='#FFF6EC';
+    if(i%4===0)s.style.background='#FF9FBE';
+    sc.appendChild(s);setTimeout(()=>s.remove(),1900);
+  }
+}
+
+/* ---- 宝箱 ---- */
+const CHEST_C=[
+'..kkkkkkkkkkkk..',
+'.kwwwwwwwwwwwwk.',
+'kwWWWWWWWWWWWWwk',
+'kwWggggggggggWwk',
+'kwwwwwwwwwwwwwwk',
+'kkkkkkkkkkkkkkkk',
+'kwwwwwggggwwwwwk',
+'kwwwwwgGGgwwwwwk',
+'kwWwwwgggwwwwWwk',
+'kwWwwwwwwwwwwWwk',
+'kwwwwwwwwwwwwwwk',
+'.kkkkkkkkkkkkkk.',
+];
+const CHEST_O=[
+'..kkkkkkkkkkkk..',
+'.kwWWWWWWWWWWwk.',
+'kwWggggggggggWwk',
+'kwwwwwwwwwwwwwwk',
+'kkkkkkkkkkkkkkkk',
+'kGyyyyyyyyyyyyGk',
+'kyyGyyGGyyGyyyyk',
+'kkkkkkkkkkkkkkkk',
+'kwwwwwggggwwwwwk',
+'kwWwwwgGGgwwwWwk',
+'kwwwwwwwwwwwwwwk',
+'.kkkkkkkkkkkkkk.',
+];
+const CHEST_PAL={k:'#4A2312',w:'#B36B2E',W:'#D98A42',g:'#FFD75E',G:'#FFF0B0',y:'#FFE894'};
+
+/* ---- ミニ宝箱（HUD/タイトル） ---- */
+const CHEST_MINI=['.kkkkkk.','kwWWWWwk','kwggggwk','kkkkkkkk','kwwgGwwk','kwwggwwk','.kkkkkk.'];
+
+/* ---- クリスタル / 石碑 / 鏡 / ギルド旗 / ゲート ---- */
+const CRYSTAL=[
+'....pp....',
+'...pPPp...',
+'..pPPLPp..',
+'..pPLLPp..',
+'.pPPLLPPp.',
+'.pPPPLPPp.',
+'..pPPPPp..',
+'...pPPp...',
+'....pp....',
+'..kkkkkk..',
+'.kwwwwwwk.',
+];
+const CRYSTAL_PAL={p:'#B34A6E',P:'#FF6FA5',L:'#FFD9E6',k:'#4A2312',w:'#B36B2E'};
+const TABLET=[
+'.ssssssss.',
+'sSSSSSSSSs',
+'sSggggggSs',
+'sSSSSSSSSs',
+'sSgggggSSs',
+'sSSSSSSSSs',
+'sSggggggSs',
+'sSSSSSSSSs',
+'sSSSSSSSSs',
+'ssssssssss',
+];
+const TABLET_PAL={s:'#3B2549',S:'#5A3F63',g:'#FFD75E'};
+const MIRROR=[
+'..gggggg..',
+'.gGGGGGGg.',
+'gGmmmmmmGg',
+'gGmMMMMmGg',
+'gGmMffMmGg',
+'gGmMMMMmGg',
+'gGmmmmmmGg',
+'.gGGGGGGg.',
+'..gggggg..',
+'...kkkk...',
+];
+const MIRROR_PAL={g:'#C99B2E',G:'#FFD75E',m:'#6E4F78',M:'#FFB5CC',f:'#FFF6EC',k:'#4A2312'};
+const FLAG=[
+'kppppppppp',
+'kpwwwwwwwp',
+'kpwhhwhhwp',
+'kphhhhhhhp',
+'kpwhhhhhwp',
+'kpwwhhhwwp',
+'kpwwwhwwwp',
+'kppppppppp',
+'k.........',
+'k.........',
+'k.........',
+];
+const FLAG_PAL={k:'#4A2312',p:'#FF4785',w:'#FFF6EC',h:'#FF6FA5'};
+const GATE=[
+'..gggggggg..',
+'.gGGGGGGGGg.',
+'gGLLLLLLLLGg',
+'gGLyyyyyyLGg',
+'gGLyWWWWyLGg',
+'gGLyWWWWyLGg',
+'gGLyWWWWyLGg',
+'gGLyWWWWyLGg',
+'gGLyyyyyyLGg',
+'gGLLLLLLLLGg',
+];
+const GATE_PAL={g:'#C99B2E',G:'#FFD75E',L:'#FFF0B0',y:'#FFE894',W:'#FFFDF2'};
+
+/* ---- 扉（枠16x20・パネル6x18 — 開口部12x18と同比率で歪みなし） ---- */
+const DOOR_FRAME=[
+'..ssssssssssss..',
+'.sSSSSSSSSSSSSs.',
+'sS............Ss',
+'sS............Ss',
+'sS............Ss',
+'sS............Ss',
+'sS............Ss',
+'sS............Ss',
+'sS............Ss',
+'sS............Ss',
+'sS............Ss',
+'sS............Ss',
+'sS............Ss',
+'sS............Ss',
+'sS............Ss',
+'sS............Ss',
+'sS............Ss',
+'sS............Ss',
+'sS............Ss',
+'sS............Ss',
+];
+const DOOR_L=[
+'kkkkkk',
+'kWWWWk',
+'kWWWpk',
+'kWWppk',
+'kWWppk',
+'kWWWpk',
+'kWWWWk',
+'kWWWWk',
+'kWWWWk',
+'kWWWgk',
+'kWWWgk',
+'kWWWWk',
+'kwWWWk',
+'kwWWWk',
+'kwWWWk',
+'kwWWWk',
+'kwwwwk',
+'kkkkkk',
+];
+const DOOR_R=[
+'kkkkkk',
+'kWWWWk',
+'kpWWWk',
+'kppWWk',
+'kppWWk',
+'kpWWWk',
+'kWWWWk',
+'kWWWWk',
+'kWWWWk',
+'kgWWWk',
+'kgWWWk',
+'kWWWWk',
+'kWWWwk',
+'kWWWwk',
+'kWWWwk',
+'kWWWwk',
+'kwwwwk',
+'kkkkkk',
+];
+/* 階層で扉が進化する（木→石→黄金→水晶）— 「潜っている感」の演出。
+   行データ(DOOR_L/R)は共通、パレット差し替えのみなのでドット崩れなし */
+const DOOR_TIERS=[
+  {door:{w:'#A55A70',W:'#C97B8E',k:'#5A2B40',p:'#FF9FBE',P:'#FFD9E6',g:'#FFD75E'},frame:{s:'#4B2F5C',S:'#5F3D72'}},   /* 木の扉 B1-2F */
+  {door:{w:'#6E6788',W:'#948CB0',k:'#3A3450',p:'#C9C2E8',P:'#E8E4FF',g:'#FFD75E'},frame:{s:'#544A6A',S:'#6E6288'}},   /* 石の扉 B3-4F */
+  {door:{w:'#B8862E',W:'#DCA845',k:'#5E4212',p:'#FFE894',P:'#FFF6D0',g:'#FFF0B0'},frame:{s:'#7A5A1E',S:'#9A7630'}},   /* 黄金の扉 B5-6F */
+  {door:{w:'#C4589A',W:'#E87BB8',k:'#5A1F44',p:'#FFD9E6',P:'#FFF0F6',g:'#FFF6EC'},frame:{s:'#8A2E66',S:'#B04A88'}},   /* 水晶の扉 B7F〜 */
+];
+function doorTier(floor){return floor<=2?0:floor<=4?1:floor<=6?2:3}
+/* 性別選択用: 男性の扉はブルー（女性はtier0のピンクのまま） */
+const DOOR_PAL_M={w:'#4A6BA8',W:'#6E90CC',k:'#25355C',p:'#9FC4FF',P:'#D9E8FF',g:'#FFD75E'};
+const DOOR_FRAME_M={s:'#2E3D66',S:'#3E5080'};
+
+function doorHTML(id,floor=1){
+  const t=DOOR_TIERS[doorTier(floor)];
+  return `<div class="doorbox" id="${id}">
+    <div class="doorbox__hole"><div class="doorbox__light"></div>
+      <div class="doorbox__pnl doorbox__pnl--l">${px(DOOR_L,t.door,7)}</div>
+      <div class="doorbox__pnl doorbox__pnl--r">${px(DOOR_R,t.door,7)}</div>
+    </div>
+    <div class="doorbox__frame">${px(DOOR_FRAME,t.frame,7)}</div>
+  </div>`;
+}
+
+/* small icons (inventory) — セル3px（28px枠に収まる等倍サイズ） */
+const IC_TICKET=px(['gggggggg','gWWpWWWg','gWWpWWWg','gWWpWWWg','gggggggg'],{g:'#FFD75E',W:'#FFF6EC',p:'#FF4785'},3);
+const IC_HEART=px(['.pp.pp.','ppppppp','ppppppp','.ppppp.','..ppp..','...p...'],{p:'#FF4785'},3);
+const IC_CHEST=px(CHEST_MINI,CHEST_PAL,3);
+const IC_KEY=px(['.ggg....','g...g...','g...gggg','g...g..g','.ggg...g'],{g:'#FFD75E'},3);
+const KEY_BIG=px(['.ggg....','g...g...','g...gggg','g...g..g','.ggg...g'],{g:'#FFD75E'},7); /* ボス撃破ドロップ用 */
+const IC_CHECK=px(['.....p','....pp','p..pp.','pppp..','.pp...'],{p:'#62E088'},3);
+
+/* ---- 5つの理由アイコン（ドット絵・rsn__icスロットは後日実画像に差し替え可） ---- */
+const RICO_SYR=px(SYR_ROWS,SYR_PAL,2); /* 01 注射器 */
+const RICO_BURST=px([ /* 02 細胞破壊バースト */
+'g..p..g',
+'.g.p.g.',
+'..ppp..',
+'ppp.ppp',
+'..ppp..',
+'.g.p.g.',
+'g..p..g'],{g:'#FFD75E',p:'#FF4785'},5);
+const RICO_CLOCK=px([ /* 03 15分 */
+'..ggg..',
+'.g...g.',
+'g..W..g',
+'g..WW.g',
+'g.....g',
+'.g...g.',
+'..ggg..'],{g:'#FFD75E',W:'#FFF6EC'},5);
+const RICO_SPARK=px([ /* 04 ダウンタイムほぼなし＝キラキラ */
+'g..p..g',
+'...p...',
+'.ppppp.',
+'...p...',
+'g..p..g'],{g:'#FFD75E',p:'#FF9FBE'},5);
+const RICO_CROWN=px([ /* 05 韓国で大人気＝王冠 */
+'p...g...p',
+'g..ggg..g',
+'gg.ggg.gg',
+'ggggggggg',
+'gpgggggpg',
+'ggggggggg'],{g:'#FFD75E',p:'#FF4785'},4);
+
+/* ================= SOUND (チップチューン) ================= */
+let AC=null,sndOK=true,sndOn=true;
+function ac(){if(!sndOK)return null;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();return AC}catch(e){sndOK=false;console.warn('audio unavailable',e);return null}}
+function tone(freq,dur,type='square',vol=.08,when=0){
+  const a=ac();if(!a||!sndOn)return;
+  const o=a.createOscillator(),g=a.createGain();
+  o.type=type;o.frequency.value=freq;
+  g.gain.setValueAtTime(vol,a.currentTime+when);
+  g.gain.exponentialRampToValueAtTime(.001,a.currentTime+when+dur);
+  o.connect(g);g.connect(a.destination);
+  o.start(a.currentTime+when);o.stop(a.currentTime+when+dur+.02);
+}
+const SFX={
+  blip:()=>tone(880,.06),
+  tick:()=>tone(1600,.02,'square',.016),
+  sel:()=>{tone(990,.05);tone(1320,.08,'square',.07,.05)},
+  door:()=>{tone(160,.22,'sawtooth',.06);tone(120,.28,'sawtooth',.05,.08)},
+  warp:()=>{[440,554,659,880].forEach((f,i)=>tone(f,.09,'square',.06,i*.06))},
+  chest:()=>{[523,659,784,1047,1319].forEach((f,i)=>tone(f,.14,'square',.09,i*.09))},
+  get:()=>{tone(1047,.08);tone(1319,.12,'square',.08,.08)},
+  hit:()=>{tone(220,.08,'sawtooth',.09);tone(180,.06,'square',.06,.04)},
+  levelup:()=>{ /* ドラクエ風レベルアップジングル */
+    [392,523,659,784].forEach((f,i)=>tone(f,.1,'square',.09,i*.095));
+    tone(1047,.55,'square',.08,.4);tone(1319,.55,'triangle',.07,.4);
+  },
+};
+/* ================= BGM（チップチューンループ） =================
+   tone()経由なので sndOn のミュートに自動連動。音量は効果音より小さめ */
+const BGM={
+  timer:null,step:0,cur:'',
+  tracks:{
+    field:{spb:.28, /* 約107BPM・ダンジョン探索 */
+      bass:[110,0,131,0,110,0,131,0,98,0,131,0,98,0,123,0],
+      mel:[440,0,523,659,0,523,440,0,392,0,494,587,0,494,392,0]},
+    boss:{spb:.17, /* 約176BPM・決戦 */
+      bass:[110,110,0,110,104,104,0,104,98,98,0,98,117,117,131,0],
+      mel:[659,0,622,659,0,587,0,523,587,0,523,494,523,0,440,0]},
+    clear:{spb:.23, /* 約130BPM・宝箱開封後のハッピー系（長調） */
+      bass:[131,0,196,0,220,0,175,0,131,0,196,0,175,196,262,0],
+      mel:[523,587,659,784,659,523,784,0,880,784,659,587,659,784,1047,0]},
+  },
+  play(name){
+    if(this.cur===name)return;
+    this.stop();const t=this.tracks[name];if(!t||!ac())return;
+    this.cur=name;this.step=0;
+    this.timer=setInterval(()=>{
+      if(!sndOn)return;
+      const i=this.step%t.bass.length;
+      if(t.bass[i])tone(t.bass[i],t.spb*.9,'triangle',.05);
+      if(t.mel[i])tone(t.mel[i],t.spb*.75,'square',.022);
+      this.step++;
+    },t.spb*1000);
+  },
+  stop(){if(this.timer){clearInterval(this.timer);this.timer=null}this.cur=''},
+};
+
+/* スマホバイブ（非対応環境では何もしない） */
+function vib(p){try{if(navigator.vibrate)navigator.vibrate(p)}catch(e){console.warn('vibrate n/a:',e.message)}}
+/* 画面シェイク */
+function shake(){const a=$('#app');a.classList.remove('shake');void a.offsetWidth;a.classList.add('shake')}
+const SND_ON_ROWS=['...p..g.','..pp.g.g','.ppp.g.g','.ppp.g.g','..pp.g.g','...p..g.'];
+const SND_OFF_ROWS=['...p....','..pp.x.x','.ppp..x.','.ppp..x.','..pp.x.x','...p....'];
+function drawSnd(){
+  $('#hSnd').innerHTML=sndOn
+    ?px(SND_ON_ROWS,{p:'#FF9FBE',g:'#FFD75E'},3)
+    :px(SND_OFF_ROWS,{p:'#5A3F63',x:'#FF6A6A'},3);
+}
+
+/* ================= FLOW 定義 ================= */
+const PARTS_OPTS=[
+  {l:'アゴ下・フェイスライン',v:'アゴ下'},{l:'二の腕',v:'二の腕'},
+  {l:'お腹（上部）',v:'上腹部'},{l:'お腹（下部）',v:'下腹部'},
+  {l:'ウエスト・脇腹',v:'側腹部'},{l:'太もも（外側）',v:'太もも外側'},
+  {l:'太もも（内側）',v:'太もも内側'},{l:'背中・ハミ肉',v:'背中'},
+];
+const FLOW=[
+  {t:'msgs',scene:'door',floor:1,msgs:[
+    'ようこそ、<b>脂肪破壊クエスト</b>へ。わたしは案内役の妖精 <b>MIRAI</b> です。',
+    'このクエストの最深部には、あなたの「落ちない脂肪」の<em>本当の理由</em>と、<b>特別チケット入りのたからばこ</b>が眠っています。',
+    'いくつかの扉を開けながら、一緒に最深部を目指しましょう。'
+  ]},
+  {t:'doors2',key:'gender',scene:'doors2',floor:1,prompt:'最初の分かれ道です。あなたの性別の扉をタップしてください。',opts:[{l:'女性',v:'女性'},{l:'男性',v:'男性'}]},
+  {t:'menu',key:'age',scene:'door',floor:2,grid:true,prompt:'年代を教えてください。<small>（診断の精度が上がります）</small>',opts:[{l:'〜20歳',v:'20歳以下'},{l:'20代前半',v:'20代前半'},{l:'20代後半',v:'20代後半'},{l:'30代前半',v:'30代前半'},{l:'30代後半',v:'30代後半'},{l:'40代〜',v:'40代以上'}]},
+  {t:'msgs',scene:'door',floor:2,msgs:[
+    'ありがとうございます。年代によって脂肪が落ちにくい部位が変わるので、大切な手がかりです。',
+    '次の部屋には——この冒険で<b>一番大切な質問</b>が待っています。'
+  ]},
+  {t:'menu',key:'body_parts',scene:'door',floor:3,multi:true,prompt:'いま、<b>一番気になっている部位</b>はどこですか？<small>（複数選択できます）</small>',opts:PARTS_OPTS},
+  {t:'msgs',scene:'door',floor:3,msgs:[
+    'そこを選びましたか…。実はその部位、<em>普通のダイエットでは最も落としにくいエリア</em>のひとつなんです。',
+    'なぜ「部分的に残ってしまう」のか。次の部屋の<b>魔法のクリスタル</b>が、その謎を見せてくれます。'
+  ]},
+  {t:'edu',scene:'crystal',floor:4},
+  {t:'menu',key:'diet',scene:'door',floor:5,multi:true,prompt:'ちなみに、これまでに試したダイエットはありますか？',opts:[{l:'運動・ジム',v:'運動'},{l:'食事制限',v:'食事制限'},{l:'エステ・マッサージ',v:'エステ'},{l:'サプリ・置き換え',v:'サプリ'},{l:'特になし',v:'なし'}]},
+  {t:'social',scene:'door',floor:5},
+  {t:'reasons',scene:'tablet',floor:6},
+  {t:'ba',scene:'mirror',floor:7},
+  {t:'boss',scene:'boss',floor:7},
+  {t:'msgs',scene:'door',floor:7,msgs:[
+    'お見事でした！最後に、スルリム式の特徴を整理しますね——',
+    '<b>ピンポイントの脂肪におよそ15分</b>。<b>ダウンタイムほぼなし</b>。そして脂肪細胞の"数"を減らすから<em>リバウンドしにくい</em>。',
+    'さあ、次はいよいよ<b>最深部</b>。たからばこの部屋です。'
+  ]},
+  {t:'chest',scene:'chest',floor:8},
+  {t:'vip',scene:'flag',floor:8},
+  {t:'area',key:'area',scene:'flag',floor:9,prompt:'枠の仮押さえをする<b>最寄りクリニック</b>を探しましょう。お住まいのエリアは？'},
+  {t:'clinic',scene:'flag',floor:9},
+  {t:'cal',scene:'flag',floor:9},
+  {t:'final',scene:'gate',floor:10},
+];
+const CHEST_IDX=FLOW.findIndex(s=>s.t==='chest');
+const TOTAL_FLOORS=10;
+
+/* ================= HUD ================= */
+function hud(){
+  const s=FLOW[ST.i];if(!s)return;
+  $('#hFloor').textContent='B'+s.floor+'F';
+  const m=$('#hMap');m.innerHTML='';
+  for(let f=1;f<=TOTAL_FLOORS;f++){
+    if(f===8){
+      const c=ce('div','hud__cell hud__cell--chest');c.innerHTML=px(CHEST_MINI,CHEST_PAL,2);
+      if(s.floor===8)c.style.animation='blink .8s steps(2) infinite';
+      m.appendChild(c);continue;
+    }
+    const c=ce('div','hud__cell'+(f<s.floor?' done':f===s.floor?' cur':''));
+    m.appendChild(c);
+  }
+  const g=ce('div','hud__cell hud__cell--goal');
+  g.innerHTML=px(['p...','pp..','ppp.','pp..','p...','p...'],{p:s.floor>=10?'#FFD75E':'#3B2549'},3);
+  m.appendChild(g);
+}
+
+/* ================= SCENE ================= */
+function baseScene(caption){
+  return `<div class="scene__glow"></div>
+  <div class="torch torch--l"><div class="torch__light"></div><div class="torch__flame"></div><div class="torch__stick"></div></div>
+  <div class="torch torch--r"><div class="torch__light"></div><div class="torch__flame"></div><div class="torch__stick"></div></div>
+  <div class="scene__floor"></div>
+  ${caption?`<div class="scn-caption">${caption}</div>`:''}
+  <div class="mirai">${MIRAI_SVG}</div>`;
+}
+function buildScene(s){
+  $('#app').dataset.tier=doorTier(s.floor); /* 階層で壁色も深まる */
+  const sc=$('#scene');let inner='';
+  switch(s.scene){
+    case 'doors2':
+      inner=baseScene('')+`<div class="scn-obj scn-obj--pair" id="pairDoors"></div>`;break;
+    case 'boss':
+      inner=baseScene('けっせん！ しぼうスライム')+`<div class="scn-obj" style="bottom:26px">
+        <div class="hpwrap"><div class="hp-label" id="hpLabel">スライム HP １００</div><div class="hpbar"><div class="hpbar__fill" id="hpFill"></div></div></div>
+        <div class="bigobj slime" id="slime">${px(SLIME_ROWS,SLIME_PAL,9)}</div>
+      </div>`;break;
+    case 'crystal':
+      inner=baseScene('まほうの クリスタルの ま')+`<div class="scn-obj bigobj">${px(CRYSTAL,CRYSTAL_PAL,12)}</div>`;break;
+    case 'tablet':
+      inner=baseScene('いにしえの せきひの ま')+`<div class="scn-obj bigobj">${px(TABLET,TABLET_PAL,12)}</div>`;break;
+    case 'mirror':
+      inner=baseScene('しんじつの かがみの ま')+`<div class="scn-obj bigobj">${px(MIRROR,MIRROR_PAL,12)}</div>`;break;
+    case 'chest':
+      inner=baseScene('さいしんぶ・たからのま')+`<div class="burst" id="burst">${'<span style="transform:rotate(0deg)"></span><span style="transform:rotate(45deg)"></span><span style="transform:rotate(90deg)"></span><span style="transform:rotate(135deg)"></span><span style="transform:rotate(180deg)"></span><span style="transform:rotate(225deg)"></span><span style="transform:rotate(270deg)"></span><span style="transform:rotate(315deg)"></span>'}</div><div class="scn-obj"><div class="bigobj bigobj--tap" id="chestObj">${px(CHEST_C,CHEST_PAL,9)}</div><div class="obj-hint" id="chestHint" style="visibility:hidden">${HAND_S}タップしてあける</div></div>`;break;
+    case 'flag':
+      inner=baseScene('よやくギルド うけつけ')+`<div class="scn-obj bigobj">${px(FLAG,FLAG_PAL,12)}</div>`;break;
+    case 'gate':
+      inner=baseScene('クリア！ ひかりのゲート')+`<div class="scn-obj bigobj" style="animation:idle 1s steps(2) infinite">${px(GATE,GATE_PAL,11)}</div>`;break;
+    default:{ /* door — 宝箱までの残り部屋数を表示（離脱防止） */
+      const left=CHEST_IDX-ST.i;
+      inner=baseScene(left>0?zk(`たからばこまで あと${left}のへや`):'')+`<div class="scn-obj">${doorHTML('door',s.floor)}</div>`;
+    }
+  }
+  sc.innerHTML=inner;
+  if(s.scene==='doors2'){
+    const pd=$('#pairDoors');
+    const t2=DOOR_TIERS[doorTier(s.floor)];
+    s.opts.forEach((o,i)=>{
+      /* 男性の扉はブルー、女性の扉はピンク（直感的に選べる色分け） */
+      const dp=o.v==='男性'?DOOR_PAL_M:t2.door;
+      const fp=o.v==='男性'?DOOR_FRAME_M:t2.frame;
+      const w=ce('div','',`
+        <div class="doorbox pick" data-i="${i}" style="width:88px;height:110px">
+          <div class="doorbox__hole"><div class="doorbox__light"></div>
+            <div class="doorbox__pnl doorbox__pnl--l">${px(DOOR_L,dp,7)}</div>
+            <div class="doorbox__pnl doorbox__pnl--r">${px(DOOR_R,dp,7)}</div>
+          </div>
+          <div class="doorbox__frame">${px(DOOR_FRAME,fp,7)}</div>
+        </div>
+        <div class="door-label">${o.l}</div>`);
+      w.style.textAlign='center';
+      pd.appendChild(w);
+    });
+  }
+}
+
+/* ================= MESSAGE (タイプライター) ================= */
+let _typing=false,_skip=false,_tapRes=null;
+/* 画面のどこをタップしても進める（ボタン等の操作要素は除外） */
+$('#stage').addEventListener('click',e=>{
+  if(e.target.closest('button,select,a,.cal__day,.pref__clear,.pref__date,.doorbox.pick,.cmd__i'))return;
+  if(_typing){_skip=true;return}
+  if(_tapRes){const r=_tapRes;_tapRes=null;$('#msgwin').classList.remove('ready');SFX.blip();r()}
+});
+function waitTap(){return new Promise(r=>{$('#msgwin').classList.add('ready');_tapRes=r})}
+async function typeText(html){
+  html=zk(html);
+  const el=$('#msgT');_typing=true;_skip=false;
+  el.innerHTML='';
+  const tokens=html.match(/<[^>]+>|./gs)||[];
+  let buf='',ti=0;
+  for(const tk of tokens){
+    buf+=tk;
+    if(_skip){el.innerHTML=html;break}
+    if(tk.length===1&&tk!==' '){el.innerHTML=buf;if(ti++%3===0)SFX.tick();await sl(17)}
+    else el.innerHTML=buf;
+  }
+  el.innerHTML=html;_typing=false;
+}
+async function say(lines,name='MIRAI'){
+  $('#msgName').textContent=name;
+  for(let i=0;i<lines.length;i++){await typeText(lines[i]);await waitTap()}
+}
+async function sayNoWaitLast(lines,name='MIRAI'){
+  $('#msgName').textContent=name;
+  for(let i=0;i<lines.length;i++){
+    await typeText(lines[i]);
+    if(i<lines.length-1)await waitTap();
+  }
+}
+
+/* ================= MENU ================= */
+function menu(opts,{multi=false,grid=false}={}){
+  return new Promise(res=>{
+    const w=ce('div','cmd pf'+(grid?' cmd--grid':''));
+    opts.forEach(o=>{
+      const b=ce('button','cmd__i');
+      b.innerHTML=`<span class="cur"></span>${multi?`<span class="cb">${IC_CHECK}</span>`:''}<span>${zk(o.l)}</span>`;
+      b.dataset.v=o.v;b.dataset.l=o.l;
+      b.onclick=()=>{
+        SFX.blip();
+        if(multi){b.classList.toggle('on');const n=$$('.cmd__i.on',w).length;go.disabled=n===0}
+        else{$$('.cmd__i',w).forEach(x=>x.classList.remove('on'));b.classList.add('on');setTimeout(commit,240)}
+      };
+      w.appendChild(b);
+    });
+    let go=null;
+    if(multi){
+      go=ce('button','cmd__go','&#9654; これでけってい');go.disabled=true;go.style.gridColumn='1/-1';
+      go.onclick=commit;w.appendChild(go);
+    }
+    BODY().appendChild(w);w.scrollIntoView({block:'nearest'});
+    function commit(){
+      const sel=$$('.cmd__i.on',w);if(!sel.length)return;
+      SFX.sel();
+      $$('button',w).forEach(x=>x.style.pointerEvents='none');
+      res({vals:sel.map(x=>x.dataset.v),labels:sel.map(x=>x.dataset.l),el:w});
+    }
+  });
+}
+
+/* ================= 部屋移動演出 ================= */
+async function openDoorAndWarp(){
+  const d=$('#door');
+  if(d){SFX.door();vib(25);d.classList.add('open');await sl(650)}
+  SFX.warp();
+  const st=$('#stage');
+  st.classList.add('warp');
+  $('#flash').classList.add('on');
+  await sl(620);
+  st.classList.remove('warp');
+  $('#flash').classList.remove('on');
+}
+function enterRoom(){const st=$('#stage');st.classList.add('enter');setTimeout(()=>st.classList.remove('enter'),500)}
+
+/* ================= STEP 実行 ================= */
+async function run(){
+  try{await runStep()}
+  catch(err){
+    console.error('step error:',err);
+    await typeText('エラーが発生しました。お手数ですが画面を再読み込みしてください。');
+  }
+}
+async function runStep(){
+  ST.i++;
+  const s=FLOW[ST.i];if(!s)return;
+  hud();buildScene(s);BODY().innerHTML='';enterRoom();
+  switch(s.t){
+    case 'msgs':{
+      await say(s.msgs);
+      await openDoorAndWarp();run();break;
+    }
+    case 'doors2':{
+      await sayNoWaitLast([s.prompt]);
+      $$('#pairDoors .doorbox').forEach(db=>{
+        db.onclick=async()=>{
+          const i=+db.dataset.i;const o=s.opts[i];
+          ST.a[s.key]=o.v;
+          $$('#pairDoors .doorbox').forEach(x=>{x.classList.remove('pick');x.onclick=null});
+          SFX.door();db.classList.add('open');
+          await typeText(`&#9654; <b>${o.l}</b> のとびらが ひらいた！`);
+          await sl(550);SFX.warp();
+          const st=$('#stage');st.classList.add('warp');$('#flash').classList.add('on');
+          await sl(620);st.classList.remove('warp');$('#flash').classList.remove('on');
+          run();
+        };
+      });
+      break;
+    }
+    case 'menu':{
+      await sayNoWaitLast([s.prompt]);
+      const r=await menu(s.opts,{multi:s.multi,grid:s.grid});
+      if(s.multi)ST.a[s.key]=r.vals;else ST.a[s.key]=r.vals[0];
+      r.el.remove();
+      await typeText(`&#9654; <b>${r.labels.join('、')}</b> をえらんだ！`);
+      await sl(500);
+      await openDoorAndWarp();run();break;
+    }
+    case 'edu':{
+      await sayNoWaitLast(['クリスタルが「部分的に脂肪が残る<em>本当の理由</em>」を映し出しています…'],'クリスタル');
+      const c=ce('div','card pf',`
+        <div class="card__t">脂肪が"部分的に"残る本当の理由</div>
+        <div class="card__b">
+          <!-- ▼実素材差し替え: この .imgph ごと <img src="..."> または <video> に置き換え（チャット版と同じ運用） -->
+          <div class="imgph">&#9654; 脂肪細胞の変化 イメージ<br/><small>GIF／動画／画像をここに配置</small></div>
+          <p>普通のダイエットでは脂肪細胞の<b>大きさ</b>が変わるだけ。<em>数は減りません。</em></p>
+          <p>スルリム式は脂肪細胞を<em>最大３５％破壊</em>。数自体を減らすことで、リバウンドしにくい体質へ導きます。</p>
+          <div class="edu">
+            <div class="edu__c edu__c--d"><strong>大きさ</strong>ダイエット<br/>→細胞は残る<br/>→リバウンド</div>
+            <div class="edu__c edu__c--s"><strong>-35%</strong>スルリム式<br/>→細胞の数ごと<br/>→スッキリ</div>
+          </div>
+        </div>`);
+      BODY().appendChild(c);c.scrollIntoView({block:'nearest'});
+      SFX.get();
+      await say(['…ご覧いただけましたか？ つまり<b>「意思の弱さ」のせいではなかった</b>んです。']);
+      await openDoorAndWarp();run();break;
+    }
+    case 'social':{
+      await sayNoWaitLast(['お気持ち、とてもよく分かります。実は——'],'MIRAI');
+      const c=ce('div','soc pf',`このクエストに挑戦した冒険者は 本日 <span class="soc__n" id="liveCount">${getLiveCount().toLocaleString()}</span> 人。<br/>そのうち <b>９３％</b> が「もっと早く知りたかった」と回答しています。`);
+      BODY().appendChild(c);startLiveCount();
+      await say(['同じ悩みを持つ方の<b>9割以上</b>が、あなたと同じ経験をされています。']);
+      await openDoorAndWarp();run();break;
+    }
+    case 'reasons':{
+      await sayNoWaitLast(['石碑に、スルリム式が選ばれている<b>5つの理由</b>が刻まれています。'],'せきひ');
+      const data=[
+        {n:'01',t:'１回で従来の約５回分',d:'FDA承認のデオキシコール酸を高濃度配合。少ない回数で効果を実感いただけます',ic:RICO_SYR},
+        {n:'02',t:'脂肪細胞を最大３５％破壊',d:'脂肪細胞の"数"自体を減らすため、リバウンドしにくい仕組みです',ic:RICO_BURST},
+        {n:'03',t:'１部位およそ１５分',d:'切開不要・麻酔不要。お仕事帰りにも通えます。当日シャワーOK',ic:RICO_CLOCK},
+        {n:'04',t:'ダウンタイムほぼなし',d:'翌日からメイク可能。一時的な腫れや内出血は通常１〜２週間で改善します',ic:RICO_SPARK},
+        {n:'05',t:'韓国で大バズの超人気メニュー',d:'韓国で爆発的に流行した施術を、JUNOが日本人の体質に合わせて独自にパワーアップ',ic:RICO_CROWN},
+      ];
+      for(let i=0;i<data.length;i++){
+        const r=data[i];
+        /* rsn__ic は実画像への差し替えスロット兼用（<img>に置き換え可） */
+        const el=ce('div','rsn pf',`<div class="rsn__row"><span class="rsn__ic">${r.ic}</span><div><div class="rsn__n">REASON ${r.n}</div><div class="rsn__t">${r.t}</div><div class="rsn__d">${r.d}</div></div></div>`);
+        BODY().appendChild(el);
+        setTimeout(()=>{el.classList.add('vis');SFX.blip()},i*380);
+      }
+      await sl(data.length*380+300);
+      $$('.rsn',BODY()).at(-1)?.scrollIntoView({block:'nearest',behavior:'smooth'});
+      await say(['以上、5つの理由でした。次の部屋には<b>しんじつの鏡</b>——実際の症例があります。']);
+      await openDoorAndWarp();run();break;
+    }
+    case 'ba':{
+      await sayNoWaitLast(['しんじつの鏡が、実際に施術を受けた方の<b>Before/After</b>を映します。'],'かがみ');
+      const BA=[
+        {part:'二の腕',cap:'<b>A様 ２９歳｜二の腕</b> #スルリム１回<br/>半袖の季節に間に合わせたいと来院されました'},
+        {part:'お腹',cap:'<b>Y様 ３２歳｜下腹部</b> #産後<br/>運動では戻らなかった下腹部が２週間で変化'},
+        {part:'太もも',cap:'<b>M様 ２７歳｜太もも内側</b> #スキニー<br/>内もものすき間ができたとお喜びの声'},
+        {part:'アゴ下',cap:'<b>S様 ３４歳｜アゴ下</b> #小顔<br/>フェイスラインがシャープに。横顔に自信が持てるように'},
+      ];
+      const c=ce('div','ba pf',`
+        <div class="ba__frame">
+          <div class="ba__h ba__h--b"><span class="ba__lb">BEFORE</span><span id="baB">実際の症例写真<br/>(${BA[0].part})</span></div>
+          <div class="ba__h ba__h--a"><span class="ba__lb">AFTER</span><span id="baA">施術後<br/>(${BA[0].part})</span></div>
+        </div>
+        <div class="ba__cap" id="baCap">${BA[0].cap}</div>
+        <div class="ba__nav">
+          <button class="ba__ar" id="baP"><svg viewBox="0 0 20 20" fill="none"><path d="M13 4L7 10L13 16" stroke="currentColor" stroke-width="3"/></svg></button>
+          <div class="ba__ds" id="baDs">${BA.map((_,i)=>`<div class="ba__d${i===0?' on':''}"></div>`).join('')}</div>
+          <button class="ba__ar" id="baN"><svg viewBox="0 0 20 20" fill="none"><path d="M7 4L13 10L7 16" stroke="currentColor" stroke-width="3"/></svg></button>
+        </div>`);
+      BODY().appendChild(c);c.scrollIntoView({block:'nearest'});
+      let idx=0;
+      const upd=()=>{
+        $('#baB').innerHTML=`実際の症例写真<br/>(${BA[idx].part})`;
+        $('#baA').innerHTML=`施術後<br/>(${BA[idx].part})`;
+        $('#baCap').innerHTML=BA[idx].cap;
+        $$('#baDs .ba__d').forEach((d,i)=>d.classList.toggle('on',i===idx));
+      };
+      $('#baP').onclick=()=>{SFX.blip();idx=(idx-1+BA.length)%BA.length;upd()};
+      $('#baN').onclick=()=>{SFX.blip();idx=(idx+1)%BA.length;upd()};
+      await say(['矢印で他の症例も見られます。ご覧になったら、画面タップで先へ進みましょう。']);
+      await openDoorAndWarp();run();break;
+    }
+    case 'boss':{
+      const part=(ST.a.body_parts||[])[0]||'おなか';
+      const bossName=(BOSS_NAMES[part]||'しぼう')+'スライム';
+      ST.a._boss=bossName;
+      BGM.play('boss');
+      await say([`……部屋の奥から気配が！ 出ました、あなたの宿敵 <b>${bossName}</b> です！`]);
+      $('#hpLabel').textContent=zk(`${bossName} HP 100`);
+      $('#msgName').textContent='バトル';
+      await typeText(`<em>スルリム注射で攻撃！</em> スライムを <b>れんだ</b> だ！`);
+      let hp=100,combo=0,maxCombo=0,lastHit=0;
+      const slime=$('#slime');
+      await new Promise(res=>{
+        slime.addEventListener('click',function hit(e){
+          e.stopPropagation();
+          const d=18+Math.floor(Math.random()*10);
+          hp=Math.max(0,hp-d);
+          /* コンボ判定: 0.9秒以内の連打でカウント継続 */
+          const now=Date.now();
+          combo=(now-lastHit<900)?combo+1:1;lastHit=now;
+          maxCombo=Math.max(maxCombo,combo);
+          if(combo>=2){
+            const old=$('.combo',$('#scene'));if(old)old.remove();
+            $('#scene').appendChild(ce('div','combo'+(combo>=5?' mx':''),`${combo} COMBO!`));
+          }
+          SFX.hit();vib(30);shake();
+          slime.classList.remove('hit');void slime.offsetWidth;slime.classList.add('hit');
+          /* 注射器が突き刺さるエフェクト */
+          const syr=ce('div','syr',SYR_SVG);
+          syr.style.left=(48+Math.random()*16)+'%';syr.style.top=(46+Math.random()*20)+'%';
+          $('#scene').appendChild(syr);setTimeout(()=>syr.remove(),360);
+          const dmg=ce('div','dmg',`-${d}`);
+          dmg.style.left=(34+Math.random()*24)+'%';dmg.style.top=(36+Math.random()*18)+'%';
+          $('#scene').appendChild(dmg);setTimeout(()=>dmg.remove(),600);
+          $('#hpFill').style.width=hp+'%';
+          $('#hpLabel').textContent=zk(`${bossName} HP ${hp}`);
+          if(hp<=0){slime.removeEventListener('click',hit);res()}
+        });
+      });
+      /* HP0 → 撃破！ 光柱＋星＋レベルアップジングル → 35%破壊テロップ */
+      BGM.stop(); /* ジングルを聴かせるため一時停止 */
+      const old=$('.combo',$('#scene'));if(old)old.remove();
+      slime.classList.add('dead');
+      $('#hpLabel').textContent=`${bossName} を たおした！`;
+      SFX.levelup();vib([60,40,120]);
+      victoryFX();
+      /* 称号（最大コンボで変化・特典はどれでも同一） */
+      const title=maxCombo>=10?'でんせつの討伐王':maxCombo>=6?'討伐の英雄':'討伐の勇者';
+      ST.a._title=title;ST.a._key=true;
+      await sl(1000);
+      const bn=ce('div','winbanner','脂肪細胞 ３５％はかい！');
+      $('#scene').appendChild(bn);SFX.get();
+      setTimeout(()=>bn.remove(),2800);
+      await sl(900);
+      /* たからのカギ ドロップ */
+      $('#scene').appendChild(ce('div','keydrop',KEY_BIG));SFX.get();
+      BGM.play('field');
+      $('#msgName').textContent='MIRAI';
+      await say([
+        `お見事！ いまの攻撃で <b>${bossName}</b> の脂肪細胞を <em>35%はかい</em> しました！`,
+        '破壊された脂肪細胞は<em>もう戻りません</em>。実際のスルリム式も、たった1回でこの威力なんです。',
+        `称号 <em>「${title}」</em> を かくとく！ さらに <b>たからのカギ</b> を てにいれた！ ……さあ、いよいよ最深部です。`
+      ]);
+      await openDoorAndWarp();run();break;
+    }
+    case 'chest':{
+      await say([
+        'ついに<b>最深部</b>へ到着しました…！ここまでお付き合いいただき、ありがとうございます。',
+        '目の前のたからばこには、診断結果に基づいた<em>あなた専用の特別チケット</em>が入っています。'
+      ]);
+      $('#chestHint').style.visibility='visible';
+      $('#msgName').textContent='たからばこ';
+      await typeText('&#9654; たからばこを タップしてあけよう！');
+      const chest=$('#chestObj');
+      await new Promise(r=>{chest.onclick=()=>{chest.onclick=null;r()}});
+      if(ST.a._key){ /* ボス撃破で入手したカギを使う演出 */
+        await typeText('&#9654; <b>たからのカギ</b> をつかった！ ……カチャリ');
+        SFX.sel();await sl(550);
+      }
+      chest.classList.remove('bigobj--tap');
+      chest.innerHTML=px(CHEST_O,CHEST_PAL,9);
+      $('#chestHint').style.display='none';
+      $('#burst').classList.add('on');
+      SFX.chest();vib([50,50,120]);shake();fireConfetti();
+      BGM.play('clear'); /* ここから先はクリアBGM（ハッピー系）で最後まで */
+      await typeText('&#9654; <em>たからばこを あけた！</em> 中から3つの特別チケットが あらわれた！');
+      await sl(900);
+      showGiftPopup();
+      break; /* 続きは showGiftPopup → afterGift() */
+    }
+    case 'vip':{
+      $('#msgName').textContent='MIRAI';
+      const c=ce('div','card pf pf--gold',`
+        <div class="card__t" style="color:var(--gold)">GIFT ０４ ─ 優先仮押さえ権</div>
+        <div class="card__b">
+          <p>現在、スルリム式は<b>大変混み合っている</b>状況です。</p>
+          <p>特に<em>土日祝やお仕事帰りの時間帯</em>は通常１〜２週間待ちになることも。</p>
+          <p style="margin-top:8px;padding:9px;background:var(--dark);border:2px solid var(--goldd);font-size:12px">このページ限定で、人気枠を含めた<b>優先的な仮押さえ</b>が可能です。次の受付で最寄りクリニックと希望日時をお選びください。</p>
+        </div>`);
+      BODY().appendChild(c);SFX.get();
+      await say(['さらにもうひとつ——<b>優先仮押さえ権</b>もお付けします。この先の「よやくギルド」で使えますよ。']);
+      await openDoorAndWarp();run();break;
+    }
+    case 'area':{
+      await sayNoWaitLast([s.prompt],'ギルドうけつけ');
+      const r=await menu(Object.keys(CLINICS).map(a=>({l:a,v:a})),{grid:true});
+      ST.a.area=r.vals[0];r.el.remove();
+      await typeText(`&#9654; <b>${r.labels[0]}</b> のちずを ひらいた！`);
+      await sl(450);run();break;
+    }
+    case 'clinic':{
+      await sayNoWaitLast(['この中から店舗をお選びください。'],'ギルドうけつけ');
+      const list=CLINICS[ST.a.area]||['新宿店'];
+      const f=ce('div','field pf',`
+        <div class="field__l"><span>店舗選択</span><span class="bdg">必須</span></div>
+        <select class="field__sel" id="cSel"><option value="">えらんでください</option>${list.map(c=>`<option value="${c}">${c}</option>`).join('')}</select>
+        <p class="field__help">全院カウンセリング無料 ／ 医師が丁寧にヒアリングいたします</p>
+        <button class="cmd__go" id="cNb" style="margin:12px 0 0;width:100%" disabled>&#9654; これでけってい</button>`);
+      BODY().appendChild(f);f.scrollIntoView({block:'nearest'});
+      await new Promise(r=>{
+        $('#cSel').onchange=e=>{$('#cNb').disabled=!e.target.value};
+        $('#cNb').onclick=()=>{const v=$('#cSel').value;if(!v)return;ST.a.clinic=v;SFX.sel();f.remove();r()};
+      });
+      await typeText(`&#9654; <b>${ST.a.clinic}</b> をえらんだ！`);
+      await sl(450);run();break;
+    }
+    case 'cal':{
+      await sayNoWaitLast(['<b>優先仮予約</b>の希望日時を選んでください。<small>LINE経由限定で、土日祝の人気枠（金の印）も対象です</small>'],'ギルドうけつけ');
+      await renderCal();
+      run();break;
+    }
+    case 'final':{
+      await renderFinal();break;
+    }
+  }
+}
+
+/* ================= 宝箱 → GIFT POPUP ================= */
+function showGiftPopup(){
+  const ov=$('#ov');const w=$('#ovWrap');
+  w.innerHTML=`
+    <div class="ov__head">
+      <div class="ov__badge">TREASURE GET!</div>
+      <div class="ov__title">あなた専用の<br/>３大特典チケット</div>
+      <div class="ov__sub">ダンジョン踏破のごほうびです</div>
+    </div>
+    <div class="gcard pf pf--pink" id="gc1">
+      <div class="gcard__get">&#9654; チケットを てにいれた！</div>
+      <div class="gcard__num">GIFT 01</div>
+      <div class="gcard__badge">７月末まで！サマーキャンペーン</div>
+      <div class="gcard__t">１部位目が さらに半額</div>
+      <div class="gcard__old">定価７４，８００円 → <s>９，８００円</s></div>
+      <div class="gcard__price">4,900<span class="yen">円</span></div>
+      <div class="gcard__note">（税込）/ １部位目</div>
+      <div class="gcard__d">期限内に枠の仮押さえ確定で有効化されます</div>
+    </div>
+    <div class="gcard pf pf--pink" id="gc2">
+      <div class="gcard__get">&#9654; チケットを てにいれた！</div>
+      <div class="gcard__num">GIFT 02</div>
+      <div class="gcard__t">２部位目以降も特別価格</div>
+      <div class="gcard__price">14,800<span class="yen">円</span></div>
+      <div class="gcard__note">（税込）/ 何部位でもOK ※１部位のみでもOK</div>
+    </div>
+    <div class="gcard pf pf--pink" id="gc3">
+      <div class="gcard__get">&#9654; チケットを てにいれた！</div>
+      <div class="gcard__num">GIFT 03</div>
+      <div class="gcard__t">人気の美容施術が１つ無料</div>
+      <div class="gcard__d">飲む医療ダイエット・ボツリヌス施術・美容内服薬など<br/>お好きなメニューをお選びいただけます</div>
+    </div>
+    <button class="ov__btn" id="ovClose">&#9654; すべて うけとる</button>`;
+  ov.classList.add('show');
+  setTimeout(()=>{$('#gc1')?.classList.add('vis');SFX.get()},250);
+  setTimeout(()=>{$('#gc2')?.classList.add('vis');SFX.get()},650);
+  setTimeout(()=>{$('#gc3')?.classList.add('vis');SFX.get()},1050);
+  $('#ovClose').onclick=()=>{SFX.sel();ov.classList.remove('show');afterGift()};
+}
+async function afterGift(){
+  /* 有効期限タイマー（チャット版とキー共通） */
+  let target;
+  const stored=store.get('sururim_timer_target');
+  if(stored&&Number(stored)>Date.now())target=Number(stored);
+  else{target=Date.now()+24*60*60*1000;store.set('sururim_timer_target',String(target))}
+  window._timerTarget=target;
+  const c=ce('div','act pf pf--gold',`
+    <div class="act__t">３大特典チケットが<br/>すべて有効になりました！</div>
+    <div class="act__s">期限内に仮押さえをお済ませください</div>
+    <div class="act__lb">ゆうこうきげん</div>
+    <div class="act__timer" id="actTimer">23:59:59</div>`);
+  BODY().appendChild(c);c.scrollIntoView({block:'nearest'});
+  $('#hTimer').classList.add('show');
+  tickTimer();
+  await say(['チケットには<em>有効期限</em>があります。画面右上にも残り時間を出しておきますね。','それでは<b>よやくギルド</b>へ。優先枠の仮押さえに進みましょう！']);
+  await openDoorAndWarp();run();
+}
+function tickTimer(){
+  const t=()=>{
+    const rem=Math.max(0,(window._timerTarget||0)-Date.now());
+    const h=String(Math.floor(rem/3600000)).padStart(2,'0');
+    const m=String(Math.floor((rem%3600000)/60000)).padStart(2,'0');
+    const s=String(Math.floor((rem%60000)/1000)).padStart(2,'0');
+    const str=`${h}:${m}:${s}`;
+    const a=$('#actTimer');if(a)a.textContent=str;
+    const b=$('#hTimerV');if(b)b.textContent=str;
+    const c2=$('#dlTimer');if(c2)c2.textContent=str;
+    requestAnimationFrame(()=>{setTimeout(t,250)});
+  };t();
+}
+
+/* ================= CALENDAR（チャット版から移植） ================= */
+function renderCal(){
+  return new Promise(done=>{
+    const f=ce('div','cal pf');f.id='calWrap';
+    const today=new Date();
+    let viewMonth=today.getMonth();let viewYear=today.getFullYear();
+    ST.a.prefs=[];
+    function fmtDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+    function drawCal(){
+      const d=new Date(viewYear,viewMonth,1);const dow1=d.getDay();const dim=new Date(viewYear,viewMonth+1,0).getDate();
+      const mName=zk(`${viewYear}年 ${viewMonth+1}月`);
+      const dowH=['日','月','火','水','木','金','土'].map(x=>`<span>${x}</span>`).join('');
+      let cells='';
+      for(let i=0;i<dow1;i++)cells+=`<div class="cal__day empty"></div>`;
+      for(let dd=1;dd<=dim;dd++){
+        const dt=new Date(viewYear,viewMonth,dd);const dw=dt.getDay();
+        const isPast=dt<new Date(today.getFullYear(),today.getMonth(),today.getDate());
+        const isWe=dw===0||dw===6;
+        const cls=['cal__day'];
+        if(isPast)cls.push('past');
+        if(dw===0)cls.push('sun');if(dw===6)cls.push('sat');
+        if(ST.a.prefs.some(p=>p.date===fmtDate(dt)))cls.push('sel');
+        cells+=`<div class="${cls.join(' ')}" data-date="${fmtDate(dt)}" data-label="${viewMonth+1}/${dd}(${['日','月','火','水','木','金','土'][dw]})">${dd}${isWe&&!isPast?'<span class="pop-tag"></span>':''}</div>`;
+      }
+      f.innerHTML=`<div class="cal__head"><div class="cal__month">${mName}</div><div class="cal__nav"><button id="calP"><svg viewBox="0 0 20 20" fill="none"><path d="M13 4L7 10L13 16" stroke="currentColor" stroke-width="3"/></svg></button><button id="calN"><svg viewBox="0 0 20 20" fill="none"><path d="M7 4L13 10L7 16" stroke="currentColor" stroke-width="3"/></svg></button></div></div>
+        <div class="cal__dow">${dowH}</div><div class="cal__grid">${cells}</div>
+        <p class="field__help" style="margin-top:8px"><span style="color:var(--gold)">&#9632; 金の印</span>＝土日祝の人気枠（LINE限定で予約可能）</p>
+        <div class="pref" id="prefs"></div>`;
+      drawPrefs();bindCal();
+    }
+    function drawPrefs(){
+      const pw=$('#prefs',f);if(!pw)return;
+      const times=['10:00','11:30','13:00','14:30','16:00','17:30','19:00'];
+      let html='';
+      for(let i=0;i<3;i++){
+        const p=ST.a.prefs[i];
+        const label=i===0?'第１希望':i===1?'第２希望':'第３希望';
+        html+=`<div class="pref__row">
+          <span class="pref__label">${label}</span>
+          <div class="pref__date${p?' filled':''}">${p?p.label:'タップで選択'}</div>
+          <div class="pref__time"><select id="pt${i}"${!p?' disabled':''}><option value="">時間</option>${times.map(t=>`<option value="${t}"${p&&p.time===t?' selected':''}>${t}</option>`).join('')}</select></div>
+          ${p?`<button class="pref__clear" data-i="${i}"><svg viewBox="0 0 14 14"><path d="M10 4L4 10M4 4l6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>`:''}
+        </div>`;
+      }
+      html+=`<button class="cmd__go" id="calDone" style="margin:10px 0 0;width:100%" ${ST.a.prefs.length===0?'disabled':''}>&#9654; これでけってい</button>`;
+      pw.innerHTML=html;
+      for(let i=0;i<3;i++){
+        const sel=$(`#pt${i}`,f);if(sel)sel.onchange=e=>{if(ST.a.prefs[i])ST.a.prefs[i].time=e.target.value};
+      }
+      $$('.pref__clear',f).forEach(b=>b.onclick=()=>{ST.a.prefs.splice(+b.dataset.i,1);drawCal()});
+      $('#calDone',f)?.addEventListener('click',()=>{
+        ST.a.prefs.forEach((p,i)=>{if(!p.time)p.time=$(`#pt${i}`,f)?.value||''});
+        SFX.sel();
+        f.querySelectorAll('button,select').forEach(x=>x.disabled=true);
+        (async()=>{
+          const labels=ST.a.prefs.filter(p=>p.date).map((p,i)=>`第${i+1}希望: ${p.label} ${p.time||''}`).join(' / ');
+          await typeText(`&#9654; <b>${labels}</b> で仮押さえ希望を登録した！`);
+          await sl(500);await openDoorAndWarp();done();
+        })();
+      });
+    }
+    function bindCal(){
+      $$('.cal__day:not(.past):not(.empty)',f).forEach(d=>{
+        d.onclick=()=>{
+          if(ST.a.prefs.length>=3)return;
+          if(ST.a.prefs.some(p=>p.date===d.dataset.date))return;
+          SFX.blip();
+          ST.a.prefs.push({date:d.dataset.date,label:d.dataset.label,time:''});
+          drawCal();
+        };
+      });
+      const minM=today.getMonth();const minY=today.getFullYear();
+      const maxM=(today.getMonth()+1)%12;const maxY=today.getFullYear()+(today.getMonth()===11?1:0);
+      const calP=$('#calP',f);const calN=$('#calN',f);
+      if(calP)calP.onclick=()=>{if(viewYear>minY||(viewYear===minY&&viewMonth>minM)){viewMonth--;if(viewMonth<0){viewMonth=11;viewYear--}drawCal()}};
+      if(calN)calN.onclick=()=>{if(viewYear<maxY||(viewYear===maxY&&viewMonth<maxM)){viewMonth++;if(viewMonth>11){viewMonth=0;viewYear++}drawCal()}};
+    }
+    BODY().appendChild(f);drawCal();f.scrollIntoView({block:'nearest'});
+  });
+}
+
+/* ================= 脂肪タイプ判定（電子カルテ用） =================
+   回答（ダイエット歴・部位数）からタイプを決定。医療的診断ではなくRPG風の演出。
+   訴求内容は既存LPで使用済みの表現（35%破壊・15分・リバウンドしにくい）の範囲に限定 */
+function fatType(){
+  const tried=(ST.a.diet||[]).filter(x=>x!=='なし');
+  const parts=ST.a.body_parts||[];
+  if(tried.length>=2)return{name:'がんこ型しぼう',
+    desc:'いくつものダイエットを生きのびた<b>歴戦の脂肪</b>。運動や食事制限では脂肪細胞の<b>大きさ</b>しか変わらず、<em>数はそのまま</em>だったのが敗因です。あなたの意思の弱さではありません。',
+    plan:'細胞の「数」そのものにアプローチする<em>スルリム式（最大３５％破壊）</em>が攻略の近道です。'};
+  if(tried.length===1)return{name:'ふっかつ型しぼう',
+    desc:'一度は小さくなっても、細胞が残っているかぎり<b>ＨＰが回復（リバウンド）</b>してくるタイプ。がんばりがムダになりやすいのが特徴です。',
+    plan:'復活のもとである脂肪細胞ごと破壊し、<em>もう戻らない</em>状態にするのが攻略法です。'};
+  if(parts.length>=2)return{name:'ちらばり型しぼう',
+    desc:'複数の部位に分かれて陣取るタイプ。全身ダイエットでは<b>各個撃破しにくい</b>のが特徴です。',
+    plan:'１部位およそ１５分の<em>ピンポイント攻撃</em>で、気になる部位から順に各個撃破するのが攻略法です。'};
+  return{name:'かくれ型しぼう',
+    desc:'１か所にひそんで動かない<b>ボス型</b>。まわりは痩せてもそこだけ残りやすいのが特徴です。',
+    plan:'弱点をねらった<em>ピンポイント攻撃（１部位およそ１５分）</em>が最も刺さる攻略法です。'};
+}
+
+/* ================= FINAL ================= */
+async function renderFinal(){
+  $('#msgName').textContent='MIRAI';
+  const a=ST.a;
+  const prefsTxt=zk(a.prefs.filter(p=>p.date).map((p,i)=>`第${i+1}希望: ${p.label} ${p.time||''}`).join(' / ')||'—');
+  await sayNoWaitLast(['<em>クエストクリア、おめでとうございます！</em>まずは冒険の記録——<b>あなたの脂肪タイプ診断書</b>です。']);
+  const ft=fatType();
+  const karte=ce('div','karte pf pf--gold',`
+    <div class="karte__head"><h3>でんしカルテ ─ 脂肪タイプ診断書</h3><span>No.Q-${String(Math.floor(1000+Math.random()*9000))}</span></div>
+    <div class="karte__type">
+      <div class="karte__lb">あなたのタイプ</div>
+      <div class="karte__name">${ft.name}</div>
+    </div>
+    <div class="karte__desc"><p>${ft.desc}</p><p style="margin-top:6px">${ft.plan}</p></div>
+    <div class="karte__rows">
+      <div class="karte__r"><span class="karte__k">対象部位</span><span class="karte__v">${zk((a.body_parts||[]).join('・')||'—')}</span></div>
+      <div class="karte__r"><span class="karte__k">年代</span><span class="karte__v">${zk(a.age||'—')}</span></div>
+      <div class="karte__r"><span class="karte__k">試した対策</span><span class="karte__v">${zk((a.diet||[]).join('・')||'なし')}</span></div>
+      <div class="karte__r"><span class="karte__k">獲得した称号</span><span class="karte__v">${a._title||'討伐の勇者'}（${a._boss||'しぼうスライム'}撃破）</span></div>
+    </div>
+    <div class="karte__note">※このカルテはLINE追加でセーブされます。セーブしないと消えてしまいます</div>`);
+  BODY().appendChild(karte);karte.scrollIntoView({block:'nearest'});SFX.get();
+  await say(['この診断書は<b>LINEにセーブ</b>できます。つづいて、手に入れた<b>戦利品</b>の一覧です！']);
+  const inv=ce('div','inv pf',`
+    <div class="inv__head"><h3>&#9654; てにいれた アイテム</h3><p>LINE追加で電子カルテ情報が自動送信されます</p></div>
+    <div class="inv__list">
+      <div class="inv__i"><span class="ic">${IC_TICKET}</span><div class="inv__info"><b>１部位目 サマー特価</b>７月末までのキャンペーン適用 <small>定価７４，８００円→<s>９，８００円</s>→さらに半額</small></div><span class="inv__val">4,900円</span></div>
+      <div class="inv__i"><span class="ic">${IC_CHEST}</span><div class="inv__info"><b>２部位目以降</b>何部位でも <small>※１部位のみでもOK</small></div><span class="inv__val">14,800円</span></div>
+      <div class="inv__i"><span class="ic">${IC_HEART}</span><div class="inv__info"><b>人気美容施術</b>１つ無料プレゼント</div><span class="inv__val">0円</span></div>
+      <div class="inv__i"><span class="ic">${IC_KEY}</span><div class="inv__info"><b>優先仮予約</b>${a.clinic||'—'}<br/><small>${prefsTxt}</small></div><span class="inv__val">確保済</span></div>
+      ${a._boss?`<div class="inv__i"><span class="ic">${IC_HEART}</span><div class="inv__info"><b>称号「${a._title||'討伐の勇者'}」</b>${a._boss}を撃破（脂肪細胞３５％破壊）</div><span class="inv__val">GET</span></div>`:''}
+      ${(a.body_parts||[]).map((p,idx)=>`<div class="inv__i"><span class="ic">${IC_CHECK}</span><div class="inv__info"><b>${p}</b>${idx===0?'１部位目 サマー特価':'２部位目以降 特別価格'}</div><span class="inv__val">${idx===0?'4,900円':'14,800円'}</span></div>`).join('')}
+    </div>`);
+  BODY().appendChild(inv);
+  const lineCard=ce('div','card pf',`
+    <div class="card__t" style="color:#62E088">LINE追加でできること</div>
+    <div class="card__b" style="font-size:12px">
+      <p>・特典チケットはすべて<b>LINEに自動送信</b>されます</p>
+      <p>・仮押さえの情報も届くため<b>再入力は不要</b>です</p>
+      <p>・予約日の変更や施術のご質問も<b>LINEからOK</b></p>
+    </div>`);
+  BODY().appendChild(lineCard);
+  BODY().appendChild(ce('div','',`<div style="text-align:center"><div class="urg">このページからの登録は 本日あと残り１２名</div></div>`));
+  const dl=ce('div','deadline pf pf--gold',`
+    <div class="deadline__lb">チケットの受け取り期限</div>
+    <div class="deadline__tm" id="dlTimer">23:59:59</div>
+    <div class="deadline__tx">期限を過ぎるとチケットは<b>消えてしまいます</b>。<br/>このままLINE追加で、すべての特典が<br/>あなたのLINEに届きます。</div>
+    <div class="deadline__tx" style="font-size:11px;color:var(--ink2)">消したい場所の脂肪を、思う存分破壊してください</div>`);
+  BODY().appendChild(dl);
+  BODY().appendChild(ce('footer','footer',`※自由診療／副作用:内出血・腫れ・鈍痛(１〜２週間)／効果には個人差があります<br/><a href="#">運営者情報</a><a href="#">プライバシーポリシー</a>`));
+  BODY().style.paddingBottom='150px';
+  inv.scrollIntoView({block:'nearest'});
+  if(!window._timerTarget){
+    const stored=store.get('sururim_timer_target');
+    window._timerTarget=stored&&Number(stored)>Date.now()?Number(stored):Date.now()+24*60*60*1000;
+    tickTimer();
+  }
+  $('#fcta').classList.add('show');
+  SFX.chest();fireConfetti();
+  await typeText('&#9654; 下のボタンから<b>LINE追加</b>で、冒険の戦利品をすべて受け取ってください！');
+}
+
+/* ================= LINE URL（チャット版と同一ロジック） ================= */
+function buildUrl(){
+  const a=ST.a;const v=CONFIG.VAR_IDS;const p=new URLSearchParams();
+  const s=(k,val)=>{if(val)p.set(`var_${k}`,Array.isArray(val)?val.join(','):val)};
+  s(v.gender,a.gender);s(v.age,a.age);s(v.body_parts,a.body_parts);s(v.diet_history,a.diet);
+  s(v.coupon,a.coupon);s(v.clinic_area,a.area);s(v.clinic,a.clinic);
+  if(a.prefs[0]){s(v.reserve_date1,a.prefs[0].date);s(v.reserve_time1,a.prefs[0].time)}
+  if(a.prefs[1]){s(v.reserve_date2,a.prefs[1].date);s(v.reserve_time2,a.prefs[1].time)}
+  if(a.prefs[2]){s(v.reserve_date3,a.prefs[2].date);s(v.reserve_time3,a.prefs[2].time)}
+  s(v.lp_source,CONFIG.LP_ID);
+  const base=CONFIG.REDIRECT_URL||`https://line.me/R/ti/p/@${CONFIG.BOT_BASIC_ID}`;
+  return `${base}?${p}`;
+}
+function openLine(){try{if(window.gtag)gtag('event','conversion',{send_to:'LINE_ADD'});if(window.fbq)fbq('track','Lead')}catch(e){console.warn('tracking error',e)}window.location.href=buildUrl()}
+window.openLine=openLine;
+
+/* ================= LIVE COUNT ================= */
+function getLiveCount(){
+  const now=new Date();
+  const todayKey='sururim_dgn_count_'+now.toDateString();
+  const stored=store.get(todayKey);
+  if(stored)return Number(stored);
+  const h=now.getHours();const m=now.getMinutes();
+  const hourWeights=[2,1,1,0,0,0,3,8,18,32,45,58,70,80,88,95,105,115,122,128,132,135,120,60];
+  let base=0;for(let i=0;i<h;i++)base+=hourWeights[i]||10;
+  base+=Math.floor((hourWeights[h]||10)*m/60);
+  base+=800+Math.floor(Math.random()*200);
+  store.set(todayKey,String(base));
+  return base;
+}
+function startLiveCount(){
+  setInterval(()=>{
+    const el=$('#liveCount');if(!el)return;
+    const cur=parseInt(el.textContent.replace(/,/g,''))||1000;
+    if(Math.random()<0.6){
+      const next=cur+Math.floor(Math.random()*2)+1;
+      el.textContent=next.toLocaleString();
+      store.set('sururim_dgn_count_'+new Date().toDateString(),String(next));
+    }
+  },5000);
+}
+
+/* ================= CONFETTI（ピクセル紙吹雪） ================= */
+function fireConfetti(){
+  const cv=$('#confetti');const ctx=cv.getContext('2d');
+  cv.width=window.innerWidth;cv.height=window.innerHeight;
+  const colors=['#FF4785','#FF9FBE','#FFD75E','#FFF6EC','#62E088','#FFB5CC'];
+  const ps=[];
+  for(let i=0;i<110;i++){ps.push({x:cv.width/2+Math.random()*180-90,y:cv.height/2-80,vx:(Math.random()-.5)*13,vy:Math.random()*-13-4,s:Math.floor(Math.random()*3)*3+6,c:colors[Math.floor(Math.random()*colors.length)],a:1})}
+  let frame=0;const maxF=170;
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ps.forEach(p=>{p.vy+=.3;p.x+=p.vx;p.y+=p.vy;p.a=Math.max(0,1-frame/maxF);
+      ctx.globalAlpha=p.a;ctx.fillStyle=p.c;
+      ctx.fillRect(Math.round(p.x/3)*3,Math.round(p.y/3)*3,p.s,p.s)});
+    ctx.globalAlpha=1;
+    frame++;if(frame<maxF)requestAnimationFrame(draw);else ctx.clearRect(0,0,cv.width,cv.height);
+  }
+  draw();
+}
+
+/* ================= TITLE / KICKOFF ================= */
+function initTitle(){
+  /* タイトルはVS対決構図（宝箱から変更）— 「戦って倒しに行く」ワクワクを演出 */
+  $('#tBattle').innerHTML=`
+    <div class="title__hero">${px(MIRAI_ROWS,MIRAI_PAL,6)}<span class="t-syr">${SYR_SVG}</span></div>
+    <span class="vs">VS</span>
+    <div class="title__foe">${px(SLIME_ROWS,SLIME_PAL,8)}<span class="t-emote">!!</span></div>`;
+  const st=$('#tStars');
+  for(let i=0;i<24;i++){
+    const s=document.createElement('i');
+    s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';
+    s.style.animationDelay=(Math.random()*1.4)+'s';
+    if(Math.random()<.3){s.style.width='6px';s.style.height='6px';s.style.background='#FFD75E'}
+    st.appendChild(s);
+  }
+  $('#tStart').onclick=async()=>{
+    SFX.warp();
+    BGM.play('field'); /* ユーザー操作起点なのでAudioContext解禁OK */
+    $('#title').classList.add('hide');
+    await sl(450);
+    run();
+  };
+  /* 「つづきから」機能は廃止（カウントダウンタイマーの緊急性と矛盾するため。その場でのLINE登録に集中させる） */
+  store.set('sururim_quest_save','');
+}
+$('#hSnd').onclick=()=>{sndOn=!sndOn;drawSnd();if(sndOn)SFX.blip()};
+
+document.addEventListener('DOMContentLoaded',()=>{
+  drawSnd();initTitle();hud();
+  $('#tapHand').innerHTML=HAND_SVG;
+});
+</script>
+</body>
+</html>
