@@ -1117,6 +1117,13 @@ button {
   color: var(--gold);
 }
 
+.cmd__i-note {
+  display: block;
+  font-size: 13px;
+  color: var(--ink2);
+  margin-top: 2px;
+}
+
 .cmd__i .cb {
   width: 16px;
   height: 16px;
@@ -1343,8 +1350,8 @@ button {
 
 .ba__frame {
   display: flex;
-  border: 3px solid var(--goldd);
   background: var(--dark);
+  overflow: hidden;
 }
 
 .ba__h {
@@ -1369,10 +1376,19 @@ button {
   border-left: 3px solid var(--goldd);
 }
 
+.ba__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .ba__lb {
   position: absolute;
   top: 6px;
   left: 6px;
+  z-index: 1;
   font-family: 'Press Start 2P', monospace;
   font-size: 7px;
   background: var(--dark);
@@ -2386,7 +2402,7 @@ button {
   display: grid;
   place-items: center;
   background: var(--dark);
-  border: 2px dashed var(--pkd);
+  overflow: hidden;
   text-align: center;
   font-size: 11px;
   color: var(--pkl);

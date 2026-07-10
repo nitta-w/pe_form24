@@ -1,33 +1,34 @@
 import { embedTimeCalendar } from './time-calendar-sync/main.js';
 
 $(() => {
-  /* ================= CONFIG (Lステップ連携) ================= */
-  const CONFIG = {
-    BOT_BASIC_ID: '897vblrf',
-    VAR_IDS: {
-      gender: '2184987', age: '2184988', body_parts: '2184994', diet_history: '2615634',
-      coupon: '2184995', clinic_area: '', clinic: '2184547',
-      reserve_date1: '2184549', reserve_time1: '2184551',
-      reserve_time2: '2349620', reserve_time3: '2387138',
-      lp_source: '2504096',
-    },
-    LP_ID: 'sururim_quest_v1',
-  };
-  /* _isClinicListError / _isCalendarError は addParamsToCtaUrl（最終画面）で参照する。
+  /* mapping ID は coding-js.md §5 の規約に従い、addParamsToCtaUrl 内の
+   * switch (botBasicId) ブロックに直書きする。
+   * _isClinicListError / _isCalendarError は addParamsToCtaUrl（最終画面）で参照する。
    * #body は毎ステップ innerHTML='' でクリアされるため、DOM属性ではなく
    * ST.a に永続化しておく必要がある。 */
-  const ST = { i: -1, a: { gender: '', age: '', body_parts: [], diet: [], area: '', clinic: '', coupon: '3大特典クーポン', _isClinicListError: false, _isCalendarError: false } };
+  const ST = {
+    i: -1,
+    a: {
+      gender: '', age: '', body_parts: [], diet: [], area: '', clinic: '',
+      /* カレンダーの選択結果。#js-time-calendar-1 は次ステップで DOM ごと
+       * 破棄されるため、「これでけってい」クリック時点でここに永続化する。 */
+      reserveDate: '', reserveTime1: '', reserveTime2: '', reserveTime3: '',
+      _isCouponDay: false, _isToday: false,
+      _isClinicListError: false, _isCalendarError: false,
+    },
+  };
 
   /* エリアID対応表（coding-js.md § クリニック一覧取得ルール §1 準拠）
    * value は js/sururim_list.php（BigQuery連携）に渡す実エリアID。
    * ラベルは入力データの表記をそのまま使用。 */
   const AREA_OPTS = [
     { l: '北海道・東北', v: '1' },
-    { l: '関東', v: '2' },
-    { l: '中部', v: '3' },
-    { l: '関西', v: '4' },
-    { l: '中国・四国', v: '5' },
-    { l: '九州・沖縄', v: '6' },
+    { l: '東京都', v: '2' },
+    { l: '関東', v: '3' },
+    { l: '中部', v: '4' },
+    { l: '近畿', v: '5' },
+    { l: '中国・四国', v: '6' },
+    { l: '九州・沖縄', v: '7' },
   ];
 
   /* ================= UTIL =================
@@ -291,10 +292,10 @@ $(() => {
 
   /* ================= FLOW 定義 ================= */
   const PARTS_OPTS = [
-    { l: 'アゴ下・フェイスライン', v: 'アゴ下' }, { l: '二の腕', v: '二の腕' },
-    { l: 'お腹（上部）', v: '上腹部' }, { l: 'お腹（下部）', v: '下腹部' },
-    { l: 'ウエスト・脇腹', v: '側腹部' }, { l: '太もも（外側）', v: '太もも外側' },
-    { l: '太もも（内側）', v: '太もも内側' }, { l: '背中・ハミ肉', v: '背中' },
+    { l: 'アゴ下・フェイスライン', v: 'アゴ下・フェイスライン' }, { l: '二の腕', v: '二の腕' },
+    { l: 'お腹（上部）', v: 'お腹（上部）' }, { l: 'お腹（下部）', v: 'お腹（下部）' },
+    { l: 'ウエスト・脇腹', v: 'ウエスト・脇腹' }, { l: '太もも（外側）', v: '太もも（外側）' },
+    { l: '太もも（内側）', v: '太もも（内側）' }, { l: '背中・ハミ肉', v: '背中・ハミ肉' },
   ];
   const FLOW = [
     { t: 'msgs', scene: 'door', floor: 1, msgs: [
@@ -303,7 +304,16 @@ $(() => {
       'いくつかの扉を開けながら、一緒に最深部を目指しましょう。',
     ] },
     { t: 'doors2', key: 'gender', scene: 'doors2', floor: 1, prompt: '最初の分かれ道です。あなたの性別の扉をタップしてください。', opts: [{ l: '女性', v: '女性' }, { l: '男性', v: '男性' }] },
-    { t: 'menu', key: 'age', scene: 'door', floor: 2, grid: true, prompt: '年代を教えてください。<small>（診断の精度が上がります）</small>', opts: [{ l: '〜20歳', v: '20歳以下' }, { l: '20代前半', v: '20代前半' }, { l: '20代後半', v: '20代後半' }, { l: '30代前半', v: '30代前半' }, { l: '30代後半', v: '30代後半' }, { l: '40代〜', v: '40代以上' }] },
+    { t: 'menu', key: 'age', scene: 'door', floor: 2, grid: true, prompt: '年代を教えてください。<small>（診断の精度が上がります）</small>', opts: [
+      { l: '17歳以下・高校生', v: '17歳以下・高校生' },
+      { l: '18～19歳', note: '※高校生を除く', v: '18～19歳' },
+      { l: '20代', v: '20代' },
+      { l: '30代', v: '30代' },
+      { l: '40代', v: '40代' },
+      { l: '50代', v: '50代' },
+      { l: '60代', v: '60代' },
+      { l: '70代以上', v: '70代以上' },
+    ] },
     { t: 'msgs', scene: 'door', floor: 2, msgs: [
       'ありがとうございます。年代によって脂肪が落ちにくい部位が変わるので、大切な手がかりです。',
       '次の部屋には——この冒険で<b>一番大切な質問</b>が待っています。',
@@ -314,7 +324,7 @@ $(() => {
       'なぜ「部分的に残ってしまう」のか。次の部屋の<b>魔法のクリスタル</b>が、その謎を見せてくれます。',
     ] },
     { t: 'edu', scene: 'crystal', floor: 4 },
-    { t: 'menu', key: 'diet', scene: 'door', floor: 5, multi: true, prompt: 'ちなみに、これまでに試したダイエットはありますか？', opts: [{ l: '運動・ジム', v: '運動' }, { l: '食事制限', v: '食事制限' }, { l: 'エステ・マッサージ', v: 'エステ' }, { l: 'サプリ・置き換え', v: 'サプリ' }, { l: '特になし', v: 'なし' }] },
+    { t: 'menu', key: 'diet', scene: 'door', floor: 5, multi: true, prompt: 'ちなみに、これまでに試したダイエットはありますか？', opts: [{ l: '運動・ジム', v: '運動・ジム' }, { l: '食事制限', v: '食事制限' }, { l: 'エステ・マッサージ', v: 'エステ・マッサージ' }, { l: 'サプリ・置き換え', v: 'サプリ・置き換え' }, { l: '特になし', v: '特になし' }] },
     { t: 'social', scene: 'door', floor: 5 },
     { t: 'reasons', scene: 'tablet', floor: 6 },
     { t: 'ba', scene: 'mirror', floor: 7 },
@@ -480,7 +490,9 @@ $(() => {
       const w = ce('div', 'cmd pf' + (grid ? ' cmd--grid' : ''));
       opts.forEach((o) => {
         const b = ce('button', 'cmd__i');
-        b.innerHTML = `<span class="cur"></span>${multi ? `<span class="cb">${IC_CHECK}</span>` : ''}<span>${zk(o.l)}</span>`;
+        /* o.note があれば小さな注釈をラベル直下に表示する（確定メッセージ・
+           内部値には反映しない。それらは o.l / o.v のみを使う） */
+        b.innerHTML = `<span class="cur"></span>${multi ? `<span class="cb">${IC_CHECK}</span>` : ''}<span>${zk(o.l)}${o.note ? `<small class="cmd__i-note">${zk(o.note)}</small>` : ''}</span>`;
         b.dataset.v = o.v; b.dataset.l = o.l;
         b.onclick = () => {
           SFX.blip();
@@ -572,8 +584,7 @@ $(() => {
         const c = ce('div', 'card pf', `
           <div class="card__t">脂肪が"部分的に"残る本当の理由</div>
           <div class="card__b">
-            <!-- ▼実素材差し替え: この .imgph ごと <img src="..."> または <video> に置き換え -->
-            <div class="imgph">&#9654; 脂肪細胞の変化 イメージ<br/><small>GIF／動画／画像をここに配置</small></div>
+            <div class="imgph"><video class="js-ignore-video-play" src="img/edu_fat.mp4" preload="none" muted playsinline loop></video></div>
             <p>普通のダイエットでは脂肪細胞の<b>大きさ</b>が変わるだけ。<em>数は減りません。</em></p>
             <p>スルリム式は脂肪細胞を<em>最大３５％破壊</em>。数自体を減らすことで、リバウンドしにくい体質へ導きます。</p>
             <div class="edu">
@@ -582,6 +593,9 @@ $(() => {
             </div>
           </div>`);
         BODY().appendChild(c); c.scrollIntoView({ block: 'nearest' });
+        /* 動的挿入動画（coding-js.md §11-3）: common.js の自動制御対象外のため
+           js-ignore-video-play を付与し、挿入＝即可視のためここで再生開始する */
+        qs('.imgph video', c)?.play().catch(() => {});
         SFX.get();
         await say(['…ご覧いただけましたか？ つまり<b>「意思の弱さ」のせいではなかった</b>んです。']);
         await openDoorAndWarp(); run(); break;
@@ -616,15 +630,15 @@ $(() => {
       case 'ba': {
         await sayNoWaitLast(['しんじつの鏡が、実際に施術を受けた方の<b>Before/After</b>を映します。'], 'かがみ');
         const BA = [
-          { part: '二の腕', cap: '<b>A様 ２９歳｜二の腕</b> #スルリム１回<br/>半袖の季節に間に合わせたいと来院されました' },
-          { part: 'お腹', cap: '<b>Y様 ３２歳｜下腹部</b> #産後<br/>運動では戻らなかった下腹部が２週間で変化' },
-          { part: '太もも', cap: '<b>M様 ２７歳｜太もも内側</b> #スキニー<br/>内もものすき間ができたとお喜びの声' },
-          { part: 'アゴ下', cap: '<b>S様 ３４歳｜アゴ下</b> #小顔<br/>フェイスラインがシャープに。横顔に自信が持てるように' },
+          { before: 'ba_01_before.webp', after: 'ba_01_after.webp', cap: '<b>A様 ２９歳｜二の腕</b>　#スルリム１回<br/>半袖の季節に間に合わせたいと来院されました' },
+          { before: 'ba_02_before.webp', after: 'ba_02_after.webp', cap: '<b>Y様 ３２歳｜下腹部</b>　#産後<br/>運動では戻らなかった下腹部が２週間で変化' },
+          { before: 'ba_03_before.webp', after: 'ba_03_after.webp', cap: '<b>M様 ２７歳｜太もも内側</b>　#スキニー<br/>内もものすき間ができたとお喜びの声' },
+          { before: 'ba_04_before.webp', after: 'ba_04_after.webp', cap: '<b>S様 ３４歳｜アゴ下</b>　#小顔<br/>フェイスラインがシャープに。横顔に自信が持てるように' },
         ];
         const c = ce('div', 'ba pf', `
           <div class="ba__frame">
-            <div class="ba__h ba__h--b"><span class="ba__lb">BEFORE</span><span id="baB">実際の症例写真<br/>(${BA[0].part})</span></div>
-            <div class="ba__h ba__h--a"><span class="ba__lb">AFTER</span><span id="baA">施術後<br/>(${BA[0].part})</span></div>
+            <div class="ba__h ba__h--b"><span class="ba__lb">BEFORE</span><img class="ba__img" id="baB" src="img/${BA[0].before}" width="300" height="345" loading="lazy" alt="Before"></div>
+            <div class="ba__h ba__h--a"><span class="ba__lb">AFTER</span><img class="ba__img" id="baA" src="img/${BA[0].after}" width="300" height="345" loading="lazy" alt="After"></div>
           </div>
           <div class="ba__cap" id="baCap">${BA[0].cap}</div>
           <div class="ba__nav">
@@ -635,8 +649,8 @@ $(() => {
         BODY().appendChild(c); c.scrollIntoView({ block: 'nearest' });
         let idx = 0;
         const upd = () => {
-          qs('#baB').innerHTML = `実際の症例写真<br/>(${BA[idx].part})`;
-          qs('#baA').innerHTML = `施術後<br/>(${BA[idx].part})`;
+          qs('#baB').src = `img/${BA[idx].before}`;
+          qs('#baA').src = `img/${BA[idx].after}`;
           qs('#baCap').innerHTML = BA[idx].cap;
           qsa('#baDs .ba__d').forEach((d, i) => d.classList.toggle('on', i === idx));
         };
@@ -952,12 +966,21 @@ $(() => {
       });
       cal.init();
 
+      /* 「これでけってい」の活性化条件は input/form23/js/script.js の
+       * isCalReady() に合わせ、日付＋第1〜第3希望時間すべての入力を必須とする。 */
       const updateDoneState = () => {
         const hasError = $parentEl.hasAttribute('data-tc-is-error');
         if (hasError) ST.a._isCalendarError = true;
         const dateChecked = qs('[name="date_1"]:checked', $parentEl);
         const time1 = qs('[name="date_1_time_1"]', $parentEl);
-        const ready = hasError || (dateChecked && time1 && time1.value !== '');
+        const time2 = qs('[name="date_1_time_2"]', $parentEl);
+        const time3 = qs('[name="date_1_time_3"]', $parentEl);
+        const ready = hasError || (
+          !!dateChecked &&
+          !!time1 && time1.value !== '' &&
+          !!time2 && time2.value !== '' &&
+          !!time3 && time3.value !== ''
+        );
         $doneBtn.disabled = !ready;
       };
       $parentEl.addEventListener('change', updateDoneState);
@@ -967,9 +990,22 @@ $(() => {
       $doneBtn.addEventListener('click', () => {
         SFX.sel();
         qsa('button,select', wrap).forEach((el) => { el.disabled = true; });
+
+        /* #body は次ステップで innerHTML='' によりクリアされ、この時点の
+         * [name="date_1"] / [name="date_1_time_*"] は DOM から失われる。
+         * addParamsToCtaUrl / renderFinal から後で参照できるよう、
+         * ここで ST.a に確定値を永続化する（coding-js.md §5-1 の
+         * requestDate/requestTime1-3/isCouponDay/isToday に対応）。 */
+        const $dateChecked = qs('[name="date_1"]:checked', $parentEl);
+        ST.a.reserveDate = $dateChecked ? $dateChecked.value : '';
+        ST.a._isCouponDay = $dateChecked ? $dateChecked.getAttribute('data-tc-is-coupon-day') === 'true' : false;
+        ST.a._isToday = $dateChecked ? $dateChecked.getAttribute('data-tc-is-today') === 'true' : false;
+        ST.a.reserveTime1 = qs('[name="date_1_time_1"]', $parentEl)?.value || '';
+        ST.a.reserveTime2 = qs('[name="date_1_time_2"]', $parentEl)?.value || '';
+        ST.a.reserveTime3 = qs('[name="date_1_time_3"]', $parentEl)?.value || '';
+
         (async () => {
-          const date = qs('[name="date_1"]:checked', $parentEl)?.value || '';
-          const label = date ? formatDate(date, 'M月D日(dow)') : '（追ってLINEでご相談）';
+          const label = ST.a.reserveDate ? formatDate(ST.a.reserveDate, 'M月D日(dow)') : '（追ってLINEでご相談）';
           await typeText(`&#9654; <b>${label}</b> で仮押さえ希望を登録した！`);
           await sl(500);
           await openDoorAndWarp();
@@ -1009,8 +1045,9 @@ $(() => {
   async function renderFinal() {
     qs('#msgName').textContent = 'MIRAI';
     const a = ST.a;
-    const $checkedDate = qs('[name="date_1"]:checked');
-    const dateLabel = $checkedDate ? zk(formatDate($checkedDate.value, 'M月D日(dow)')) : '（追ってLINEでご相談）';
+    /* #js-time-calendar-1 は前ステップで #body から破棄済みのため、
+     * ST.a.reserveDate（renderCalendarStep() で永続化済み）を参照する。 */
+    const dateLabel = a.reserveDate ? zk(formatDate(a.reserveDate, 'M月D日(dow)')) : '（追ってLINEでご相談）';
     await sayNoWaitLast(['<em>クエストクリア、おめでとうございます！</em>まずは冒険の記録——<b>あなたの脂肪タイプ診断書</b>です。']);
     const ft = fatType();
     const karte = ce('div', 'karte pf pf--gold', `
@@ -1075,16 +1112,19 @@ $(() => {
   const addParamsToCtaUrl = () => {
     const requestClinic = ST.a.clinic ?? '';
 
-    const $checkedDate = $('[name="date_1"]:checked');
-    const requestDate = $checkedDate.val() ?? '';
+    /* #body は毎ステップ innerHTML='' でクリアされ、カレンダーの
+     * [name="date_1"] / [name="date_1_time_*"] も一緒に消えるため、
+     * ライブDOMクエリではなく renderCalendarStep() の「これでけってい」
+     * クリック時に ST.a へ永続化した値を参照する（エラー属性と同様）。 */
+    const requestDate = ST.a.reserveDate ?? '';
     const requestFormattedDate = formatDate(requestDate, 'MM月DD日(dow)');
+    const isCouponDay = ST.a._isCouponDay;
+    const isToday = ST.a._isToday;
 
-    const requestTime1 = $('[name="date_1_time_1"]').val() ?? '';
-    const requestTime2 = $('[name="date_1_time_2"]').val() ?? '';
-    const requestTime3 = $('[name="date_1_time_3"]').val() ?? '';
+    const requestTime1 = ST.a.reserveTime1 ?? '';
+    const requestTime2 = ST.a.reserveTime2 ?? '';
+    const requestTime3 = ST.a.reserveTime3 ?? '';
 
-    /* #body は毎ステップ innerHTML='' でクリアされ、エラー属性を持つ要素も
-     * 一緒に消えるため、DOM 属性ではなく ST.a に永続化した値を参照する。 */
     const isClinicListError = ST.a._isClinicListError;
     const isCalendarError = ST.a._isCalendarError;
     const errorCodes = [];
@@ -1095,26 +1135,36 @@ $(() => {
     const varMapping = {};
 
     switch (botBasicId) {
-      case CONFIG.BOT_BASIC_ID:
-        varMapping[CONFIG.VAR_IDS.gender] = ST.a.gender;
-        varMapping[CONFIG.VAR_IDS.age] = ST.a.age;
-        varMapping[CONFIG.VAR_IDS.body_parts] = (ST.a.body_parts || []).join(',');
-        varMapping[CONFIG.VAR_IDS.diet_history] = (ST.a.diet || []).join(',');
-        varMapping[CONFIG.VAR_IDS.coupon] = ST.a.coupon;
-        varMapping[CONFIG.VAR_IDS.clinic_area] = ST.a.area;
+      case '897vblrf':
+        //@897vblrf
+        varMapping['2184987'] = ST.a.gender;
+        varMapping['2184988'] = ST.a.age;
+        varMapping['2184994'] = (ST.a.body_parts || []).join(',');
+        varMapping['2615634'] = (ST.a.diet || []).join(',');
 
+        // 医院がエラーでない場合のみパラメータ追加
         if (!isClinicListError) {
-          varMapping[CONFIG.VAR_IDS.clinic] = requestClinic;
+          varMapping['2184547'] = requestClinic;
         }
 
+        // 医院取得＆カレンダーがエラーでない場合のみチェック
         if (!isClinicListError && !isCalendarError) {
-          varMapping[CONFIG.VAR_IDS.reserve_date1] = requestFormattedDate;
-          varMapping[CONFIG.VAR_IDS.reserve_time1] = requestTime1;
-          varMapping[CONFIG.VAR_IDS.reserve_time2] = requestTime2;
-          varMapping[CONFIG.VAR_IDS.reserve_time3] = requestTime3;
+          varMapping['2184549'] = requestFormattedDate;
+          varMapping['2184551'] = requestTime1;
+          varMapping['2349620'] = requestTime2;
+          varMapping['2387138'] = requestTime3;
+
+          varMapping['2460256'] = isCouponDay
+            ? '日時特典あり'
+            : '日時特典なし';
+
+          if (isToday) {
+            varMapping['2433744'] = '当日希望';
+          }
         }
 
-        varMapping[CONFIG.VAR_IDS.lp_source] = CONFIG.LP_ID;
+        // エラーコード（常に送信）
+        varMapping['2504096'] = errorCodes;
         break;
     }
 
