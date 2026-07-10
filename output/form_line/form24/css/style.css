@@ -1264,6 +1264,13 @@ button {
   background: var(--dark);
 }
 
+.edu__c-img {
+  width: 100%;
+  height: auto;
+  margin-bottom: 8px;
+  border-radius: 0.4rem;
+}
+
 .edu__c strong {
   display: block;
   font-family: 'Press Start 2P', monospace;

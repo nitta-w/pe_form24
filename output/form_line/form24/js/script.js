@@ -588,8 +588,14 @@ $(() => {
             <p>普通のダイエットでは脂肪細胞の<b>大きさ</b>が変わるだけ。<em>数は減りません。</em></p>
             <p>スルリム式は脂肪細胞を<em>最大３５％破壊</em>。数自体を減らすことで、リバウンドしにくい体質へ導きます。</p>
             <div class="edu">
-              <div class="edu__c edu__c--d"><strong>大きさ</strong>ダイエット<br/>→細胞は残る<br/>→リバウンド</div>
-              <div class="edu__c edu__c--s"><strong>-35%</strong>スルリム式<br/>→細胞の数ごと<br/>→スッキリ</div>
+              <div class="edu__c edu__c--d">
+                <img class="edu__c-img" src="img/left.webp" width="349" height="281" loading="lazy" alt="">
+                <strong>大きさ</strong>ダイエット<br/>→細胞は残る<br/>→リバウンド
+              </div>
+              <div class="edu__c edu__c--s">
+                <img class="edu__c-img" src="img/right.webp" width="349" height="281" loading="lazy" alt="">
+                <strong>-35%</strong>スルリム式<br/>→細胞の数ごと<br/>→スッキリ
+              </div>
             </div>
           </div>`);
         BODY().appendChild(c); c.scrollIntoView({ block: 'nearest' });
