@@ -16,10 +16,8 @@ $bot_basic_id = ad_messaging_api_bot_basic_id();
 	<meta name="keywords" content="" />
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link
-		href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap"
-		rel="stylesheet">
-	<link rel="stylesheet" href="js/time-calendar-sync/style.css">
+	<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="js/time-calendar-sync/style.css?time=<?= time() ?>">
 	<link rel="stylesheet" href="css/style.css">
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

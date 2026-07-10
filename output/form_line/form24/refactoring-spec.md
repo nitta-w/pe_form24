@@ -119,7 +119,7 @@ output/
 - 入力の `<script>`（`input:640-1856`）のゲーム制御（`CONFIG` / `ST` / `FLOW` / `run()` / `runStep()` / 各種演出関数）を移植。
 - **テンプレ標準の `state`/`.js-csl__item` カルーセル構造は採用しない**（ゲームの線形 FLOW 制御と構造が異なるため）。代わりに以下のテンプレ契約点を FLOW 制御に注入する（受容した規約逸脱として明記・§9）。
   - **CTA**: `openLine()`/`buildUrl()` を廃し、`addParamsToCtaUrl()`（`.claude/rules/coding-js.md` §5 準拠）を実装。`$('.js-cta-link').each(...)` で `data-href` に `var_*` を付与。
-  - **ad_count 計測**: `postAdCountStatus()`（テンプレ完全コピー）を導入。`state.adCountStatus`（初期値3）を `runStep()` 前進ごとに `++` → 送信。戻り操作（本ゲームには「戻る」操作が無いため実質常時前進）は該当なし。
+  - **ad_count 計測**: `postAdCountStatus()`（テンプレ完全コピー）を導入。`adState.adCountStatus`（初期値3）は `runStep()` の呼び出しごとではなく、画面上部ステータスバー（`#hFloor`/`#hMap`、B1F〜B10F の `hud__map`）が実際に進んだ時（`s.floor` が直前のフロアから変化した時）のみ `++` → 送信する（2026-07-10 変更。同一フロア内の複数ステップ遷移ではカウントしない）。`adCountStatusMax` は `TOTAL_FLOORS + 2`（= 12）。戻り操作（本ゲームには「戻る」操作が無いため実質常時前進）は該当なし。
   - **インラインハンドラ撤廃**: `onclick="openLine()"` を削除し、CTA は `.js-cta-link` の `click` イベントで `onClickCtaBtn` 相当の処理（`addParamsToCtaUrl()` 実行）にバインド。
 - **カレンダー統合**（`cal` ステップ、`input:1519-1523,1601-1680` を置換）:
   1. `#body` に `#js-time-calendar-1 > .js-tc / .js-tc-list` を動的挿入。
@@ -177,8 +177,8 @@ output/
 |---|---|---|---|---|
 | 性別 | gender | 単一 | 常に送信 | 2184987 |
 | 年代 | age | 単一 | 常に送信 | 2184988 |
-| 痩せたい部位 | body_parts | 複数（`,`結合） | 常に送信 | 2184994 |
-| これまでに試されたダイエット | diet | 複数（`,`結合） | 常に送信 | 2615634 |
+| 痩せたい部位 | body_parts | 複数（`,`結合、前後に`,`付与。例: `,アゴ下・フェイスライン,二の腕,`） | 常に送信 | 2184994 |
+| これまでに試されたダイエット | diet | 複数（`,`結合、前後に`,`付与。例: `,運動・ジム,食事制限,`） | 常に送信 | 2615634 |
 | 希望院 | clinic（`requestClinic`） | 単一 | `!isClinicListError` | 2184547 |
 | 希望日 | `date_1` の `.val()` を `formatDate(…,'MM月DD日(dow)')` | 単一 | `!isClinicListError && !isCalendarError` | 2184549 |
 | 第一希望時間 | `date_1_time_1` | 単一 | 同上 | 2184551 |
